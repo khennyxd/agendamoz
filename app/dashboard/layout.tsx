@@ -8,7 +8,7 @@ import {
   LogOut, Menu, ExternalLink, CreditCard, AlertCircle,
 } from "lucide-react";
 import { supabase, type Business } from "@/lib/supabase";
-import { differenceInDays, parseISO } from "date-fns";
+
 
 const navItems = [
   { href: "/dashboard",              label: "Painel",         icon: LayoutDashboard },
@@ -40,9 +40,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push("/");
   }
 
-  const trialDaysLeft = business?.trial_ends_at
-    ? differenceInDays(parseISO(business.trial_ends_at), new Date())
-    : 0;
   const showBanner = business && !business.is_active;
 
   const Sidebar = () => (
@@ -69,9 +66,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Trial / inactive warning in sidebar */}
       {showBanner && (
         <div className={`mx-3 mt-3 rounded-xl p-3 text-xs ${trialDaysLeft > 0 ? "bg-amber-50 text-amber-800" : "bg-red-50 text-red-700"}`}>
-          <p className="font-semibold mb-0.5">
-            {trialDaysLeft > 0 ? `⏳ ${trialDaysLeft} dias de teste` : "⚠️ Conta inactiva"}
-          </p>
+          <p className="font-semibold mb-0.5">⚠️ Conta inactiva</p>
           <Link href="/dashboard/billing" className="underline font-medium" onClick={() => setSidebarOpen(false)}>
             Subscrever agora →
           </Link>
@@ -127,13 +122,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top banner for inactive accounts */}
         {showBanner && (
-          <div className={`px-4 py-2.5 text-sm text-center font-medium flex items-center justify-center gap-2 ${
-            trialDaysLeft > 0 ? "bg-amber-500 text-white" : "bg-red-600 text-white"
-          }`}>
+          <div className="px-4 py-2.5 text-sm text-center font-medium flex items-center justify-center gap-2 bg-red-600 text-white">
             <AlertCircle className="w-4 h-4" />
-            {trialDaysLeft > 0
-              ? `O seu período de teste termina em ${trialDaysLeft} dias. `
-              : "A sua conta está inactiva. Os clientes não conseguem fazer reservas. "}
+            A sua conta está inactiva. Os clientes não conseguem fazer reservas.
             <Link href="/dashboard/billing" className="underline font-bold">
               Subscrever agora
             </Link>

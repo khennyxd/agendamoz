@@ -1,223 +1,368 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Search, Filter, Calendar, Phone, X } from "lucide-react";
-import { supabase, type Appointment, type Service, type Business } from "@/lib/supabase";
-import { format, parseISO } from "date-fns";
+import { useParams } from "next/navigation";
+import { Calendar, Clock, MapPin, Phone, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { supabase, type Business, type Service } from "@/lib/supabase";
+import { format, addDays, startOfToday, isBefore, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
 
-type Status = "all" | Appointment["status"];
+const TIME_SLOTS = [
+  "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+  "12:00","13:00","13:30","14:00","14:30","15:00","15:30","16:00",
+  "16:30","17:00","17:30","18:00",
+];
 
-function StatusBadge({ status }: { status: Appointment["status"] }) {
-  const map = {
-    pending:   { label: "Pendente",   cls: "badge-pending" },
-    confirmed: { label: "Confirmado", cls: "badge-confirmed" },
-    completed: { label: "Concluído",  cls: "badge-completed" },
-    cancelled: { label: "Cancelado",  cls: "badge-cancelled" },
-  };
-  const { label, cls } = map[status];
-  return <span className={cls}>{label}</span>;
-}
+type Step = "service" | "datetime" | "info" | "confirm" | "done";
 
-export default function AppointmentsPage() {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
+export default function BookingPage() {
+  const { slug } = useParams<{ slug: string }>();
   const [business, setBusiness] = useState<Business | null>(null);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState<Status>("all");
-  const [showModal, setShowModal] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
-  const [newAppt, setNewAppt] = useState({
-    client_name: "",
-    client_phone: "",
-    service_id: "",
-    date: new Date().toISOString().split("T")[0],
-    time: "09:00",
-    notes: "",
-  });
+  // Booking state
+  const [step, setStep] = useState<Step>("service");
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedTime, setSelectedTime] = useState<string>("");
+  const [weekStart, setWeekStart] = useState(startOfToday());
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  async function load() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+  useEffect(() => {
+    async function load() {
+      const { data: biz } = await supabase
+        .from("businesses")
+        .select("*")
+        .eq("slug", slug)
+        .single();
 
-    const { data: biz } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
-    setBusiness(biz);
+      if (!biz) { setNotFound(true); setLoading(false); return; }
+      setBusiness(biz);
 
-    if (biz) {
-      const [{ data: appts }, { data: svcs }] = await Promise.all([
-        supabase.from("appointments").select("*, service:services(name, price_mzn, duration_minutes)").eq("business_id", biz.id).order("date", { ascending: false }).order("time", { ascending: false }),
-        supabase.from("services").select("*").eq("business_id", biz.id).eq("is_active", true),
-      ]);
-      setAppointments(appts || []);
+      const { data: svcs } = await supabase
+        .from("services")
+        .select("*")
+        .eq("business_id", biz.id)
+        .eq("is_active", true)
+        .order("price_mzn");
       setServices(svcs || []);
+      setLoading(false);
     }
-    setLoading(false);
-  }
+    load();
+  }, [slug]);
 
-  useEffect(() => { load(); }, []);
-
-  async function updateStatus(id: string, status: Appointment["status"]) {
-    await supabase.from("appointments").update({ status }).eq("id", id);
-    setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
-  }
-
-  async function createAppointment(e: React.FormEvent) {
-    e.preventDefault();
+  async function loadBookedSlots(date: string) {
     if (!business) return;
-    setSaving(true);
-    const { error } = await supabase.from("appointments").insert({ ...newAppt, business_id: business.id, status: "confirmed" });
-    if (!error) {
-      setShowModal(false);
-      setNewAppt({ client_name: "", client_phone: "", service_id: "", date: new Date().toISOString().split("T")[0], time: "09:00", notes: "" });
-      load();
-    }
-    setSaving(false);
+    const { data } = await supabase
+      .from("appointments")
+      .select("time")
+      .eq("business_id", business.id)
+      .eq("date", date)
+      .neq("status", "cancelled");
+    setBookedSlots((data || []).map((a) => a.time.slice(0, 5)));
   }
 
-  const filtered = appointments.filter((a) => {
-    const matchSearch = a.client_name.toLowerCase().includes(search.toLowerCase()) || a.client_phone.includes(search);
-    const matchStatus = filterStatus === "all" || a.status === filterStatus;
-    return matchSearch && matchStatus;
-  });
+  async function submitBooking() {
+    if (!business || !selectedService) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("appointments").insert({
+      business_id: business.id,
+      service_id: selectedService.id,
+      client_name: clientName,
+      client_phone: clientPhone,
+      date: selectedDate,
+      time: selectedTime,
+      notes,
+      status: "pending",
+    });
+    if (!error) setStep("done");
+    setSubmitting(false);
+  }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-teal-800 border-t-transparent rounded-full animate-spin" /></div>;
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+
+  if (loading) return (
+    <div className="min-h-screen bg-cream flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-teal-800 border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  if (notFound) return (
+    <div className="min-h-screen bg-cream flex items-center justify-center text-center px-4">
+      <div>
+        <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h1 className="font-display text-2xl font-bold mb-2">Negócio não encontrado</h1>
+        <p className="text-gray-500">O link de agendamento não existe ou foi alterado.</p>
+      </div>
+    </div>
+  );
+
+  const isInactive = !business?.is_active;
+
+  if (isInactive) return (
+    <div className="min-h-screen bg-cream flex items-center justify-center text-center px-4">
+      <div className="max-w-sm">
+        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Calendar className="w-10 h-10 text-gray-400" />
+        </div>
+        <h1 className="font-display text-2xl font-bold mb-3">Agendamentos indisponíveis</h1>
+        <p className="text-gray-500 text-sm leading-relaxed">
+          De momento não é possível fazer reservas em <strong>{business?.name}</strong>. Por favor contacte directamente o negócio.
+        </p>
+        {business?.phone && (
+          <a href={"tel:" + business.phone} className="inline-flex items-center gap-2 mt-6 bg-teal-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors">
+            📞 {business.phone}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+
+  if (step === "done") return (
+    <div className="min-h-screen bg-cream flex items-center justify-center px-4">
+      <div className="text-center max-w-sm">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="w-10 h-10 text-green-600" />
+        </div>
+        <h1 className="font-display text-3xl font-bold mb-3">Reserva confirmada!</h1>
+        <p className="text-gray-600 mb-2">
+          O seu agendamento em <strong>{business?.name}</strong> foi recebido com sucesso.
+        </p>
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 mt-6 text-left space-y-2">
+          <p className="text-sm"><span className="text-gray-500">Serviço:</span> <strong>{selectedService?.name}</strong></p>
+          <p className="text-sm"><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "EEEE, d MMMM yyyy", { locale: pt })}</strong></p>
+          <p className="text-sm"><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
+          <p className="text-sm"><span className="text-gray-500">Nome:</span> <strong>{clientName}</strong></p>
+        </div>
+        <p className="text-gray-500 text-sm mt-4">Vamos entrar em contacto para confirmar.</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="font-display text-3xl font-bold">Agendamentos</h1>
-          <p className="text-gray-500 text-sm mt-1">{appointments.length} total</p>
-        </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2 text-sm py-2.5">
-          <Plus className="w-4 h-4" /> Novo
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input className="input pl-10" placeholder="Pesquisar por nome ou telefone..." value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <select className="input w-auto" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as Status)}>
-          <option value="all">Todos os estados</option>
-          <option value="pending">Pendente</option>
-          <option value="confirmed">Confirmado</option>
-          <option value="completed">Concluído</option>
-          <option value="cancelled">Cancelado</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <div className="card overflow-hidden p-0">
-        {filtered.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">
-            <Calendar className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-            <p>Nenhum agendamento encontrado</p>
+    <div className="min-h-screen bg-cream">
+      {/* Business header */}
+      <div className="bg-teal-800 text-white px-4 py-8">
+        <div className="max-w-lg mx-auto">
+          <div className="w-12 h-12 bg-teal-700 rounded-2xl flex items-center justify-center mb-4">
+            <Calendar className="w-6 h-6 text-amber-400" />
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-4">Cliente</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4 hidden sm:table-cell">Serviço</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Data & Hora</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Estado</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Ações</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {filtered.map((appt) => (
-                  <tr key={appt.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <p className="font-medium text-sm">{appt.client_name}</p>
-                      <p className="text-gray-500 text-xs flex items-center gap-1 mt-0.5">
-                        <Phone className="w-3 h-3" />{appt.client_phone}
-                      </p>
-                    </td>
-                    <td className="px-4 py-4 hidden sm:table-cell">
-                      <p className="text-sm">{(appt as any).service?.name || "—"}</p>
-                      <p className="text-gray-500 text-xs">{(appt as any).service?.price_mzn} MZN</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-sm font-medium">{format(parseISO(appt.date), "d MMM yyyy", { locale: pt })}</p>
-                      <p className="text-gray-500 text-xs">{appt.time.slice(0, 5)}</p>
-                    </td>
-                    <td className="px-4 py-4"><StatusBadge status={appt.status} /></td>
-                    <td className="px-4 py-4">
-                      <select
-                        className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-teal-400"
-                        value={appt.status}
-                        onChange={(e) => updateStatus(appt.id, e.target.value as Appointment["status"])}
-                      >
-                        <option value="pending">Pendente</option>
-                        <option value="confirmed">Confirmar</option>
-                        <option value="completed">Concluir</option>
-                        <option value="cancelled">Cancelar</option>
-                      </select>
-                    </td>
-                  </tr>
+          <h1 className="font-display text-2xl font-bold">{business?.name}</h1>
+          {business?.description && <p className="text-teal-300 text-sm mt-1">{business.description}</p>}
+          <div className="flex flex-wrap gap-4 mt-3">
+            {business?.phone && (
+              <span className="flex items-center gap-1.5 text-teal-300 text-sm">
+                <Phone className="w-3.5 h-3.5" />{business.phone}
+              </span>
+            )}
+            {business?.address && (
+              <span className="flex items-center gap-1.5 text-teal-300 text-sm">
+                <MapPin className="w-3.5 h-3.5" />{business.address}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Step progress */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-10">
+        <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-2">
+          {(["service","datetime","info"] as const).map((s, i) => {
+            const labels = ["Serviço", "Data & Hora", "Os seus dados"];
+            const steps: Step[] = ["service","datetime","info","confirm","done"];
+            const current = steps.indexOf(step);
+            const idx = steps.indexOf(s);
+            const done = current > idx;
+            const active = current === idx;
+            return (
+              <div key={s} className="flex items-center gap-2 flex-1">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${done ? "bg-teal-800 text-white" : active ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-400"}`}>
+                  {done ? "✓" : i + 1}
+                </div>
+                <span className={`text-xs hidden sm:block ${active ? "font-semibold text-gray-800" : "text-gray-400"}`}>{labels[i]}</span>
+                {i < 2 && <div className={`flex-1 h-0.5 ${done ? "bg-teal-800" : "bg-gray-200"}`} />}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="max-w-lg mx-auto px-4 py-8">
+
+        {/* STEP 1: Service */}
+        {step === "service" && (
+          <div>
+            <h2 className="font-display text-2xl font-bold mb-6">Escolha o serviço</h2>
+            {services.length === 0 ? (
+              <div className="card text-center py-12 text-gray-500">
+                <p>Este negócio ainda não tem serviços disponíveis.</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {services.map((service) => (
+                  <button
+                    key={service.id}
+                    onClick={() => { setSelectedService(service); setStep("datetime"); }}
+                    className={`card text-left hover:shadow-md hover:border-teal-300 transition-all border-2 ${selectedService?.id === service.id ? "border-teal-700" : "border-transparent"}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold">{service.name}</p>
+                        {service.description && <p className="text-gray-500 text-sm mt-0.5">{service.description}</p>}
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="flex items-center gap-1 text-xs text-gray-500">
+                            <Clock className="w-3.5 h-3.5" /> {service.duration_minutes} min
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4 flex-shrink-0">
+                        <p className="font-display text-lg font-bold text-teal-800">{service.price_mzn.toLocaleString("pt-MZ")}</p>
+                        <p className="text-xs text-gray-400">MZN</p>
+                      </div>
+                    </div>
+                  </button>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* STEP 2: Date & Time */}
+        {step === "datetime" && (
+          <div>
+            <button onClick={() => setStep("service")} className="flex items-center gap-1 text-sm text-teal-700 mb-6 hover:text-teal-800">
+              <ChevronLeft className="w-4 h-4" /> Voltar
+            </button>
+            <h2 className="font-display text-2xl font-bold mb-6">Escolha a data e hora</h2>
+
+            {/* Week navigation */}
+            <div className="flex items-center justify-between mb-4">
+              <button
+                onClick={() => setWeekStart(addDays(weekStart, -7))}
+                disabled={isBefore(addDays(weekStart, -1), startOfToday())}
+                className="p-2 hover:bg-gray-100 rounded-xl disabled:opacity-30"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <p className="text-sm font-semibold">{format(weekStart, "MMMM yyyy", { locale: pt })}</p>
+              <button onClick={() => setWeekStart(addDays(weekStart, 7))} className="p-2 hover:bg-gray-100 rounded-xl">
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Days */}
+            <div className="grid grid-cols-7 gap-1 mb-6">
+              {weekDays.map((day) => {
+                const dateStr = format(day, "yyyy-MM-dd");
+                const isPast = isBefore(day, startOfToday());
+                const isSelected = selectedDate === dateStr;
+                return (
+                  <button
+                    key={dateStr}
+                    disabled={isPast}
+                    onClick={() => { setSelectedDate(dateStr); setSelectedTime(""); loadBookedSlots(dateStr); }}
+                    className={`flex flex-col items-center py-3 px-1 rounded-xl text-sm transition-all ${
+                      isSelected ? "bg-teal-800 text-white" :
+                      isPast ? "opacity-30 cursor-not-allowed" :
+                      "hover:bg-gray-100"
+                    }`}
+                  >
+                    <span className="text-xs mb-1">{format(day, "EEE", { locale: pt })}</span>
+                    <span className="font-bold">{format(day, "d")}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Times */}
+            {selectedDate && (
+              <>
+                <p className="text-sm font-semibold text-gray-700 mb-3">Horários disponíveis</p>
+                <div className="grid grid-cols-4 gap-2 mb-6">
+                  {TIME_SLOTS.map((time) => {
+                    const booked = bookedSlots.includes(time);
+                    const isSelected = selectedTime === time;
+                    return (
+                      <button
+                        key={time}
+                        disabled={booked}
+                        onClick={() => setSelectedTime(time)}
+                        className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          isSelected ? "bg-teal-800 text-white" :
+                          booked ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" :
+                          "bg-white border border-gray-200 hover:border-teal-400 hover:text-teal-800"
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            <button
+              onClick={() => setStep("info")}
+              disabled={!selectedDate || !selectedTime}
+              className="btn-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Continuar
+            </button>
+          </div>
+        )}
+
+        {/* STEP 3: Client info */}
+        {step === "info" && (
+          <div>
+            <button onClick={() => setStep("datetime")} className="flex items-center gap-1 text-sm text-teal-700 mb-6 hover:text-teal-800">
+              <ChevronLeft className="w-4 h-4" /> Voltar
+            </button>
+            <h2 className="font-display text-2xl font-bold mb-6">Os seus dados</h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Nome completo</label>
+                <input className="input" placeholder="Maria da Silva" value={clientName} onChange={(e) => setClientName(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Número de telefone</label>
+                <input className="input" placeholder="+258 84 000 0000" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">Observações (opcional)</label>
+                <textarea className="input resize-none" rows={3} placeholder="Alguma informação adicional..." value={notes} onChange={(e) => setNotes(e.target.value)} />
+              </div>
+
+              {/* Summary */}
+              <div className="bg-teal-50 rounded-2xl p-4 text-sm space-y-2">
+                <p className="font-semibold text-teal-800 mb-3">Resumo da reserva</p>
+                <p><span className="text-gray-500">Serviço:</span> <strong>{selectedService?.name}</strong></p>
+                <p><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "d MMMM yyyy", { locale: pt })}</strong></p>
+                <p><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
+                <p><span className="text-gray-500">Preço:</span> <strong>{selectedService?.price_mzn.toLocaleString("pt-MZ")} MZN</strong></p>
+              </div>
+
+              <button
+                onClick={submitBooking}
+                disabled={!clientName || !clientPhone || submitting}
+                className="btn-primary w-full justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? "A confirmar..." : "Confirmar reserva"}
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {/* New appointment modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-bold">Novo agendamento</h2>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-xl">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={createAppointment} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Nome do cliente</label>
-                <input className="input" placeholder="Maria da Silva" value={newAppt.client_name} onChange={(e) => setNewAppt((p) => ({ ...p, client_name: e.target.value }))} required />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Telefone</label>
-                <input className="input" placeholder="+258 84 000 0000" value={newAppt.client_phone} onChange={(e) => setNewAppt((p) => ({ ...p, client_phone: e.target.value }))} required />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Serviço</label>
-                <select className="input" value={newAppt.service_id} onChange={(e) => setNewAppt((p) => ({ ...p, service_id: e.target.value }))} required>
-                  <option value="">Seleccionar serviço</option>
-                  {services.map((s) => <option key={s.id} value={s.id}>{s.name} — {s.price_mzn} MZN</option>)}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Data</label>
-                  <input type="date" className="input" value={newAppt.date} onChange={(e) => setNewAppt((p) => ({ ...p, date: e.target.value }))} required />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Hora</label>
-                  <input type="time" className="input" value={newAppt.time} onChange={(e) => setNewAppt((p) => ({ ...p, time: e.target.value }))} required />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Notas (opcional)</label>
-                <textarea className="input resize-none" rows={2} placeholder="Observações..." value={newAppt.notes} onChange={(e) => setNewAppt((p) => ({ ...p, notes: e.target.value }))} />
-              </div>
-              <button type="submit" disabled={saving} className="btn-primary w-full justify-center mt-2">
-                {saving ? "A guardar..." : "Criar agendamento"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* Footer */}
+      <div className="text-center pb-8 text-xs text-gray-400">
+        Powered by <a href="/" className="text-teal-600 hover:underline">AgendaMoz</a> 🇲🇿
+      </div>
     </div>
   );
 }
