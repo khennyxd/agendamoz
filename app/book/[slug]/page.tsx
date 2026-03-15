@@ -113,13 +113,8 @@ export default function BookingPage() {
         </div>
         <h1 className="font-display text-2xl font-bold mb-3">Agendamentos indisponíveis</h1>
         <p className="text-gray-500 text-sm leading-relaxed">
-          De momento não é possível fazer reservas em <strong>{business?.name}</strong>. Por favor contacte directamente o negócio.
+          De momento não é possível fazer reservas em <strong>{business?.name}</strong>.
         </p>
-        {business?.phone && (
-          <a href={"tel:" + business.phone} className="inline-flex items-center gap-2 mt-6 bg-teal-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors">
-            📞 {business.phone}
-          </a>
-        )}
       </div>
     </div>
   );
