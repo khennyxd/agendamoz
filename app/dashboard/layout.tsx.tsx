@@ -29,6 +29,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
       const { data } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+      if (!data) { router.push("/dashboard/onboarding"); return; }
       setBusiness(data);
     }
     loadBusiness();
