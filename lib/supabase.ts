@@ -15,6 +15,10 @@ export type Business = {
   phone: string;
   address: string;
   description: string;
+  is_active: boolean;
+  plan: string | null;
+  trial_ends_at: string | null;
+  subscription_ends_at: string | null;
   created_at: string;
 };
 
