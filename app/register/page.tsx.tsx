@@ -80,17 +80,20 @@ export default function RegisterPage() {
       if (!authData.user) throw new Error("Erro ao criar utilizador");
 
       const slug = form.slug || generateSlug(form.businessName);
-      const { error: bizError } = await supabase.from("businesses").insert({
-        owner_id: authData.user.id,
-        name: form.businessName,
-        slug,
-        type: form.businessType,
-        phone: form.phone,
-        address: form.address,
-        description: "",
+      const res = await fetch("/api/create-business", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          owner_id: authData.user.id,
+          name: form.businessName,
+          slug,
+          type: form.businessType,
+          phone: form.phone,
+          address: form.address,
+        }),
       });
-
-      if (bizError) throw bizError;
+      const bizData = await res.json();
+      if (!res.ok) throw new Error(bizData.error || "Erro ao criar negócio");
 
       // Show email confirmation message
       setEmailSent(true);
