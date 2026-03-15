@@ -103,6 +103,27 @@ export default function BookingPage() {
     </div>
   );
 
+  const isInactive = !business?.is_active;
+
+  if (isInactive) return (
+    <div className="min-h-screen bg-cream flex items-center justify-center text-center px-4">
+      <div className="max-w-sm">
+        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Calendar className="w-10 h-10 text-gray-400" />
+        </div>
+        <h1 className="font-display text-2xl font-bold mb-3">Agendamentos indisponíveis</h1>
+        <p className="text-gray-500 text-sm leading-relaxed">
+          De momento não é possível fazer reservas em <strong>{business?.name}</strong>. Por favor contacte directamente o negócio.
+        </p>
+        {business?.phone && (
+          <a href={"tel:" + business.phone} className="inline-flex items-center gap-2 mt-6 bg-teal-800 text-white px-6 py-3 rounded-xl font-semibold hover:bg-teal-700 transition-colors">
+            📞 {business.phone}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+
   if (step === "done") return (
     <div className="min-h-screen bg-cream flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
