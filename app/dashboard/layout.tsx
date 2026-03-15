@@ -65,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* Trial / inactive warning in sidebar */}
       {showBanner && (
-        <div className={`mx-3 mt-3 rounded-xl p-3 text-xs ${trialDaysLeft > 0 ? "bg-amber-50 text-amber-800" : "bg-red-50 text-red-700"}`}>
+        <div className="mx-3 mt-3 rounded-xl p-3 text-xs bg-red-50 text-red-700">
           <p className="font-semibold mb-0.5">⚠️ Conta inactiva</p>
           <Link href="/dashboard/billing" className="underline font-medium" onClick={() => setSidebarOpen(false)}>
             Subscrever agora →
