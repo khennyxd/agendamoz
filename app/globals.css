@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --teal: #0D4F5C;
+  --amber: #F5A623;
+  --cream: #FAF7F2;
+  --ink: #1a1a2e;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--cream);
+    color: var(--ink);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-fraunces);
+    font-optical-sizing: auto;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-teal-800 text-white px-6 py-3 rounded-xl font-semibold
+           hover:bg-teal-700 transition-all duration-200 shadow-md
+           hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-amber-500 text-white px-6 py-3 rounded-xl font-semibold
+           hover:bg-amber-400 transition-all duration-200 shadow-md
+           hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply border-2 border-teal-800 text-teal-800 px-6 py-3 rounded-xl font-semibold
+           hover:bg-teal-800 hover:text-white transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+           focus:outline-none focus:ring-2 focus:ring-teal-400 focus:border-transparent
+           transition-all duration-200 font-body text-ink placeholder-gray-400;
+  }
+
+  .badge-pending   { @apply bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold; }
+  .badge-confirmed { @apply bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-xs font-semibold; }
+  .badge-completed { @apply bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold; }
+  .badge-cancelled { @apply bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold; }
+}
+
+/* Staggered animation helpers */
+.anim-delay-100 { animation-delay: 100ms; }
+.anim-delay-200 { animation-delay: 200ms; }
+.anim-delay-300 { animation-delay: 300ms; }
+.anim-delay-400 { animation-delay: 400ms; }
+.anim-delay-500 { animation-delay: 500ms; }
+
+/* Opacity 0 by default for animated elements */
+[data-animate] {
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
