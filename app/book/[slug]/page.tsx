@@ -61,11 +61,47 @@ export default function BookingPage() {
     if (!business) return;
     const { data } = await supabase
       .from("appointments")
-      .select("time")
+      .select("time, service:services(duration_minutes)")
       .eq("business_id", business.id)
       .eq("date", date)
       .neq("status", "cancelled");
-    setBookedSlots((data || []).map((a) => a.time.slice(0, 5)));
+
+    // Calculate all blocked slots considering service duration
+    const blocked = new Set<string>();
+    for (const appt of (data || [])) {
+      const duration = (appt as any).service?.duration_minutes || 30;
+      const [h, m] = appt.time.slice(0, 5).split(":").map(Number);
+      const startMins = h * 60 + m;
+      // Block all 30-min slots that overlap with this appointment
+      for (let i = 0; i < duration; i += 30) {
+        const slotMins = startMins + i;
+        const slotH = Math.floor(slotMins / 60).toString().padStart(2, "0");
+        const slotM = (slotMins % 60).toString().padStart(2, "0");
+        blocked.add(`${slotH}:${slotM}`);
+      }
+    }
+    setBookedSlots(Array.from(blocked));
+  }
+
+  // Calculate blocked slots for selected service duration
+  function getUnavailableSlots(bookedList: string[], serviceDuration: number): Set<string> {
+    const unavailable = new Set<string>(bookedList);
+    // Also block slots where the new appointment would overlap with existing ones
+    for (const slot of TIME_SLOTS) {
+      const [h, m] = slot.split(":").map(Number);
+      const startMins = h * 60 + m;
+      // Check if any slot within our service duration is already booked
+      for (let i = 0; i < serviceDuration; i += 30) {
+        const checkMins = startMins + i;
+        const checkH = Math.floor(checkMins / 60).toString().padStart(2, "0");
+        const checkM = (checkMins % 60).toString().padStart(2, "0");
+        if (bookedList.includes(`${checkH}:${checkM}`)) {
+          unavailable.add(slot);
+          break;
+        }
+      }
+    }
+    return unavailable;
   }
 
   async function submitBooking() {
@@ -281,16 +317,18 @@ export default function BookingPage() {
                 <p className="text-sm font-semibold text-gray-700 mb-3">Horários disponíveis</p>
                 <div className="grid grid-cols-4 gap-2 mb-6">
                   {TIME_SLOTS.map((time) => {
-                    const booked = bookedSlots.includes(time);
+                    const unavailable = getUnavailableSlots(bookedSlots, selectedService?.duration_minutes || 30);
+                    const isUnavailable = unavailable.has(time);
                     const isSelected = selectedTime === time;
                     return (
                       <button
                         key={time}
-                        disabled={booked}
+                        disabled={isUnavailable}
                         onClick={() => setSelectedTime(time)}
+                        title={isUnavailable ? "Horário indisponível" : ""}
                         className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
                           isSelected ? "bg-teal-800 text-white" :
-                          booked ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" :
+                          isUnavailable ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" :
                           "bg-white border border-gray-200 hover:border-teal-400 hover:text-teal-800"
                         }`}
                       >
