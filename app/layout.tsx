@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Syne, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const syne = Syne({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-syne",
   display: "swap",
 });
 
-const jakarta = Plus_Jakarta_Sans({
+const dmSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-dm-sans",
   display: "swap",
 });
 
@@ -27,8 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt" className={`${fraunces.variable} ${jakarta.variable}`}>
-      <body className="font-body bg-cream text-ink antialiased">{children}</body>
+    <html lang="pt" className={`${syne.variable} ${dmSans.variable}`}>
+      <body className="font-body bg-obsidian-950 text-slate-200 antialiased">
+        {children}
+      </body>
     </html>
   );
 }

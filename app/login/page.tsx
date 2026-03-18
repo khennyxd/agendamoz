@@ -33,7 +33,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       if (error.message.includes("Email not confirmed")) {
-        setError("Por favor confirme o seu email antes de entrar. Verifique a sua caixa de entrada.");
+        setError("Por favor confirme o seu email antes de entrar.");
       } else {
         setError("Email ou senha incorretos. Tente novamente.");
       }
@@ -57,96 +57,73 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-obsidian-950 cyber-bg flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Glow effects */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-400/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative w-full max-w-md animate-fade-up">
+        {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-teal-800 rounded-xl flex items-center justify-center">
+          <Link href="/" className="inline-flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center shadow-cyan-sm">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-2xl font-bold text-teal-800">AgendaMoz</span>
+            <span className="font-display text-2xl font-black text-white">AgendaMoz</span>
           </Link>
         </div>
 
-        <div className="card shadow-lg">
-          <h1 className="font-display text-2xl font-bold mb-1">Bem-vindo de volta</h1>
-          <p className="text-gray-500 text-sm mb-6">Entre na sua conta para continuar</p>
+        <div className="bg-obsidian-800 border border-[rgba(0,229,255,0.1)] rounded-2xl p-8 shadow-cyan-sm">
+          <h1 className="font-display text-2xl font-black text-white mb-1">Bem-vindo de volta</h1>
+          <p className="text-slate-500 text-sm mb-8">Entre na sua conta para continuar</p>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
               {error}
             </div>
           )}
 
-          {/* Google button */}
+          {/* Google */}
           <button
             onClick={handleGoogleLogin}
             disabled={loadingGoogle}
-            className="w-full flex items-center justify-center gap-3 border-2 border-gray-200 rounded-xl py-3 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 mb-5"
+            className="w-full flex items-center justify-center gap-3 border border-[rgba(255,255,255,0.08)] bg-white/5 rounded-xl py-3 px-4 text-sm font-semibold text-slate-300 hover:bg-white/10 hover:border-white/15 transition-all duration-200 mb-6"
           >
-            {loadingGoogle ? (
-              <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <GoogleIcon />
-            )}
+            {loadingGoogle ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
             {loadingGoogle ? "A entrar..." : "Entrar com Google"}
           </button>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium">ou com email</span>
-            <div className="flex-1 h-px bg-gray-200" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-[rgba(0,229,255,0.08)]" />
+            <span className="text-xs text-slate-600 font-medium">ou com email</span>
+            <div className="flex-1 h-px bg-[rgba(0,229,255,0.08)]" />
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Email</label>
-              <input
-                type="email"
-                className="input"
-                placeholder="o-seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Email</label>
+              <input type="email" className="input" placeholder="o-seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
-
             <div>
-              <label className="block text-sm font-semibold mb-2 text-gray-700">Senha</label>
+              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Senha</label>
               <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  className="input pr-12"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
+                <input type={showPassword ? "text" : "password"} className="input pr-12" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
-
             <div className="flex justify-end">
-              <Link href="/reset-password" className="text-sm text-teal-700 hover:text-teal-800">
-                Esqueceu a senha?
-              </Link>
+              <Link href="/reset-password" className="text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors">Esqueceu a senha?</Link>
             </div>
-
-            <button type="submit" disabled={loading} className="btn-primary w-full justify-center">
+            <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-1">
               {loading ? "A entrar..." : "Entrar"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
+          <p className="text-center text-sm text-slate-600 mt-6">
             Não tem conta?{" "}
-            <Link href="/register" className="text-teal-700 font-semibold hover:text-teal-800">
+            <Link href="/register" className="text-cyan-400 font-semibold hover:text-cyan-300 transition-colors">
               Registar gratuitamente
             </Link>
           </p>
