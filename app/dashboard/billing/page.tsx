@@ -12,7 +12,7 @@ const PLANS = [
     name: "Básico",
     price: 599,
     desc: "Perfeito para começar",
-    features: ["Até 50 agendamentos/mês", "1 funcionário", "Página de reserva pública", "Suporte por email"],
+    features: ["Até 50000 agendamentos/mês", "1 funcionário", "Página de reserva pública", "Suporte por email"],
   },
   {
     id: "profissional",
