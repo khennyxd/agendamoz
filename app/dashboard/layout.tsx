@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -31,40 +30,35 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     load();
   }, [router]);
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    router.push("/");
-  }
+  async function handleLogout() { await supabase.auth.signOut(); router.push("/"); }
 
   const showBanner = business && !business.is_active;
 
   const Sidebar = () => (
-    <aside className="flex flex-col h-full bg-navy-900/95 backdrop-blur-xl border-r border-royal-500/10">
-      <div className="p-6 border-b border-royal-500/10">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 bg-royal-500 rounded-lg flex items-center justify-center group-hover:bg-royal-400 transition-colors shadow-[0_0_15px_rgba(29,78,216,0.3)]">
+    <aside className="flex flex-col h-full bg-white border-r border-gray-200">
+      <div className="p-6 border-b border-gray-200">
+        <Link href="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
             <Calendar className="w-4 h-4 text-white" />
           </div>
-          <span className="font-display text-lg font-bold text-white">AgendaMoz</span>
+          <span className="font-display text-lg font-bold text-gray-900">AgendaMoz</span>
         </Link>
       </div>
 
       {business && (
-        <div className="px-4 py-4 border-b border-royal-500/10">
-          <p className="text-xs text-slate-600 mb-1 uppercase tracking-wider">O seu negócio</p>
-          <p className="font-semibold text-white text-sm truncate">{business.name}</p>
-          <a href={`/book/${business.slug}`} target="_blank" className="flex items-center gap-1 text-xs text-sky-300/60 hover:text-sky-300 mt-1 transition-colors">
+        <div className="px-4 py-4 border-b border-gray-100">
+          <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">O seu negócio</p>
+          <p className="font-semibold text-gray-900 text-sm truncate">{business.name}</p>
+          <a href={`/book/${business.slug}`} target="_blank" className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 mt-1 transition-colors">
             Ver página pública <ExternalLink className="w-3 h-3" />
           </a>
         </div>
       )}
 
       {showBanner && (
-        <div className="mx-3 mt-3 rounded-xl p-3 text-xs bg-red-500/10 border border-red-500/20 text-red-400">
+        <div className="mx-3 mt-3 rounded-xl p-3 text-xs bg-red-50 border border-red-200 text-red-700">
           <p className="font-semibold mb-1">⚠️ Conta inactiva</p>
-          <Link href="/dashboard/billing" className="underline font-medium text-red-300 hover:text-red-200" onClick={() => setSidebarOpen(false)}>
-            Subscrever agora →
-          </Link>
+          <Link href="/dashboard/billing" className="underline font-medium text-red-600" onClick={() => setSidebarOpen(false)}>Subscrever agora →</Link>
         </div>
       )}
 
@@ -83,41 +77,38 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         })}
       </nav>
 
-      <div className="p-4 border-t border-royal-500/10">
-        <button onClick={handleLogout} className="flex items-center gap-2 text-xs text-slate-600 hover:text-red-400 transition-colors w-full px-3 py-2 rounded-xl hover:bg-red-500/5">
-          <LogOut className="w-4 h-4" />
-          Sair da conta
+      <div className="p-4 border-t border-gray-100">
+        <button onClick={handleLogout} className="flex items-center gap-2 text-xs text-gray-500 hover:text-red-600 transition-colors w-full px-3 py-2 rounded-xl hover:bg-red-50">
+          <LogOut className="w-4 h-4" /> Sair da conta
         </button>
       </div>
     </aside>
   );
 
   return (
-    <div className="min-h-screen flex">
-      <div className="hidden md:flex w-64 flex-shrink-0 flex-col h-screen sticky top-0">
-        <Sidebar />
-      </div>
+    <div className="min-h-screen flex bg-gray-50">
+      <div className="hidden md:flex w-64 flex-shrink-0 flex-col h-screen sticky top-0"><Sidebar /></div>
 
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-64"><Sidebar /></div>
+          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-64 bg-white"><Sidebar /></div>
         </div>
       )}
 
       <div className="flex-1 flex flex-col min-h-screen">
         {showBanner && (
-          <div className="px-4 py-2.5 text-sm text-center font-medium flex items-center justify-center gap-2 bg-red-600/90 text-white backdrop-blur-sm">
+          <div className="px-4 py-2.5 text-sm text-center font-medium flex items-center justify-center gap-2 bg-red-600 text-white">
             <AlertCircle className="w-4 h-4" />
             A sua conta está inactiva. Os clientes não conseguem fazer reservas.{" "}
-            <Link href="/dashboard/billing" className="underline font-bold hover:text-red-200">Subscrever agora</Link>
+            <Link href="/dashboard/billing" className="underline font-bold">Subscrever agora</Link>
           </div>
         )}
-        <header className="md:hidden bg-navy-900/90 backdrop-blur-xl border-b border-royal-500/10 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
-          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-royal-500/10 text-slate-400">
+        <header className="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 sticky top-0 z-40">
+          <button onClick={() => setSidebarOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 text-gray-600">
             <Menu className="w-5 h-5" />
           </button>
-          <span className="font-display font-bold text-white">AgendaMoz</span>
+          <span className="font-display font-bold text-gray-900">AgendaMoz</span>
         </header>
         <main className="flex-1 p-4 sm:p-6 md:p-8">{children}</main>
       </div>

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,20 +18,16 @@ function GoogleIcon() {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(""); const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [loadingGoogle, setLoadingGoogle] = useState(false);
+  const [loading, setLoading] = useState(false); const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [error, setError] = useState("");
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true); setError("");
+    e.preventDefault(); setLoading(true); setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message.includes("Email not confirmed") ? "Por favor confirme o seu email antes de entrar." : "Email ou senha incorretos. Tente novamente.");
-    } else { router.push("/dashboard"); }
+    if (error) { setError(error.message.includes("Email not confirmed") ? "Por favor confirme o seu email antes de entrar." : "Email ou senha incorretos."); }
+    else { router.push("/dashboard"); }
     setLoading(false);
   }
 
@@ -43,64 +38,59 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[400px] h-[400px] bg-royal-500/10 rounded-full blur-[120px] animate-float-slow" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[350px] h-[350px] bg-royal-600/8 rounded-full blur-[100px] animate-float-medium" />
-      </div>
-
-      <div className="relative w-full max-w-md animate-fade-in">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-royal-500 rounded-xl flex items-center justify-center group-hover:bg-royal-400 transition-colors shadow-[0_0_20px_rgba(29,78,216,0.4)]">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-2xl font-bold text-white">AgendaMoz</span>
+            <span className="font-display text-2xl font-bold text-gray-900">AgendaMoz</span>
           </Link>
         </div>
 
-        <div className="card-glow p-8">
-          <h1 className="font-display text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
-          <p className="text-slate-500 text-sm mb-8">Entre na sua conta para continuar</p>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
+          <h1 className="font-display text-2xl font-bold text-gray-900 mb-1">Bem-vindo de volta</h1>
+          <p className="text-gray-500 text-sm mb-8">Entre na sua conta para continuar</p>
 
-          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">{error}</div>}
+          {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl mb-6">{error}</div>}
 
-          <button onClick={handleGoogleLogin} disabled={loadingGoogle} className="w-full flex items-center justify-center gap-3 border border-royal-500/25 bg-royal-500/8 rounded-xl py-3 px-4 text-sm font-semibold text-slate-300 hover:bg-royal-500/15 hover:border-royal-500/40 transition-all duration-200 mb-6">
-            {loadingGoogle ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
+          <button onClick={handleGoogleLogin} disabled={loadingGoogle} className="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white rounded-xl py-3 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 mb-6">
+            {loadingGoogle ? <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
             {loadingGoogle ? "A entrar..." : "Entrar com Google"}
           </button>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-royal-500/15" />
-            <span className="text-xs text-slate-600">ou com email</span>
-            <div className="flex-1 h-px bg-royal-500/15" />
+            <div className="flex-1 h-px bg-gray-200" />
+            <span className="text-xs text-gray-400 font-medium">ou com email</span>
+            <div className="flex-1 h-px bg-gray-200" />
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
             <div>
-              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Email</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Email</label>
               <input type="email" className="input" placeholder="o-seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div>
-              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Senha</label>
+              <label className="block text-sm font-semibold mb-2 text-gray-700">Senha</label>
               <div className="relative">
                 <input type={showPassword ? "text" : "password"} className="input pr-12" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400">
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
             <div className="flex justify-end">
-              <Link href="/reset-password" className="text-xs text-sky-300/60 hover:text-sky-300 transition-colors">Esqueceu a senha?</Link>
+              <Link href="/reset-password" className="text-sm text-purple-600 hover:text-purple-700">Esqueceu a senha?</Link>
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-1">
               {loading ? "A entrar..." : "Entrar"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-slate-600 mt-6">
+          <p className="text-center text-sm text-gray-500 mt-6">
             Não tem conta?{" "}
-            <Link href="/register" className="text-sky-300 font-semibold hover:text-white transition-colors">Registar gratuitamente</Link>
+            <Link href="/register" className="text-purple-600 font-semibold hover:text-purple-700">Registar gratuitamente</Link>
           </p>
         </div>
       </div>

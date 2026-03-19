@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Save, ExternalLink } from "lucide-react";
 import { supabase, type Business } from "@/lib/supabase";
@@ -23,69 +22,47 @@ export default function SettingsPage() {
   }, []);
 
   async function save(e: React.FormEvent) {
-    e.preventDefault();
-    if (!business) return;
-    setSaving(true);
+    e.preventDefault(); if (!business) return; setSaving(true);
     await supabase.from("businesses").update(form).eq("id", business.id);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
-    setSaving(false);
+    setSaved(true); setTimeout(() => setSaved(false), 3000); setSaving(false);
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-royal-500 border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-3xl font-bold text-white mb-2">Definições</h1>
-      <p className="text-slate-500 mb-8">Configure as informações do seu negócio</p>
+      <h1 className="font-display text-3xl font-bold text-gray-900 mb-2">Definições</h1>
+      <p className="text-gray-500 mb-8">Configure as informações do seu negócio</p>
 
-      {saved && (
-        <div className="bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-xl mb-6 text-sm font-medium">
-          ✓ Alterações guardadas com sucesso!
-        </div>
-      )}
+      {saved && <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-6 text-sm font-medium">✓ Alterações guardadas com sucesso!</div>}
 
       <form onSubmit={save} className="flex flex-col gap-6">
-        <div className="card-glow">
-          <h2 className="font-display text-lg font-bold text-white mb-5">Informações do negócio</h2>
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 className="font-display text-lg font-bold text-gray-900 mb-5">Informações do negócio</h2>
           <div className="flex flex-col gap-4">
-            <div>
-              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Nome do negócio</label>
-              <input className="input" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Descrição</label>
-              <textarea className="input resize-none" rows={3} placeholder="Descreva o seu negócio para os clientes..." value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
-            </div>
+            <div><label className="block text-sm font-semibold mb-2 text-gray-700">Nome do negócio</label><input className="input" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required /></div>
+            <div><label className="block text-sm font-semibold mb-2 text-gray-700">Descrição</label><textarea className="input resize-none" rows={3} placeholder="Descreva o seu negócio..." value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} /></div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Telefone</label>
-                <input className="input" placeholder="+258 84 000 0000" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Endereço</label>
-                <input className="input" placeholder="Av. Julius Nyerere, Maputo" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} />
-              </div>
+              <div><label className="block text-sm font-semibold mb-2 text-gray-700">Telefone</label><input className="input" placeholder="+258 84 000 0000" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} /></div>
+              <div><label className="block text-sm font-semibold mb-2 text-gray-700">Endereço</label><input className="input" placeholder="Av. Julius Nyerere, Maputo" value={form.address} onChange={(e) => setForm((p) => ({ ...p, address: e.target.value }))} /></div>
             </div>
           </div>
         </div>
 
-        <div className="card-glow">
-          <h2 className="font-display text-lg font-bold text-white mb-2">Link da página pública</h2>
-          <p className="text-slate-500 text-sm mb-4">Este é o link que os seus clientes usam para fazer reservas</p>
-          <div className="flex items-center border border-royal-500/20 rounded-xl overflow-hidden bg-navy-900">
-            <span className="px-3 py-3 text-slate-500 text-sm border-r border-royal-500/20 flex-shrink-0 bg-navy-900">agendamoz.vercel.app/book/</span>
-            <input className="flex-1 px-3 py-3 text-sm focus:outline-none bg-transparent text-white placeholder-slate-600" value={form.slug}
-              onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40) }))} />
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 className="font-display text-lg font-bold text-gray-900 mb-2">Link da página pública</h2>
+          <p className="text-gray-500 text-sm mb-4">Este é o link que os seus clientes usam para fazer reservas</p>
+          <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden">
+            <span className="bg-gray-50 px-3 py-3 text-gray-500 text-sm border-r border-gray-300 flex-shrink-0">agendamoz.vercel.app/book/</span>
+            <input className="flex-1 px-3 py-3 text-sm focus:outline-none text-gray-900" value={form.slug} onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40) }))} />
           </div>
-          <a href={`/book/${form.slug}`} target="_blank" className="flex items-center gap-1 text-sm text-sky-300 hover:text-white mt-3 transition-colors">
+          <a href={`/book/${form.slug}`} target="_blank" className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 mt-3 transition-colors">
             Abrir página pública <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
 
         <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2 self-start">
-          <Save className="w-4 h-4" />
-          {saving ? "A guardar..." : "Guardar alterações"}
+          <Save className="w-4 h-4" />{saving ? "A guardar..." : "Guardar alterações"}
         </button>
       </form>
     </div>
