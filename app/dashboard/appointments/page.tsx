@@ -44,9 +44,11 @@ export default function AppointmentsPage() {
     await supabase.from("appointments").update({ status }).eq("id", id);
     setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
 
-    // Send SMS on confirm or cancel
+    // Send SMS on confirm or cancel (profissional+ only)
     const appt = appointments.find(a => a.id === id);
-    if (appt && business) {
+    const plan = business?.plan || "none";
+    const hasSMS = plan === "profissional" || plan === "empresarial";
+    if (appt && business && hasSMS) {
       const dateFormatted = new Date(appt.date).toLocaleDateString("pt-MZ", { day: "2-digit", month: "long" });
       if (status === "confirmed") {
         const serviceName = (appt as any).service?.name || "Serviço";
