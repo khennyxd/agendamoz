@@ -119,10 +119,10 @@ export default function BookingPage() {
       status: "pending",
     });
     if (!error) {
-      // Send SMS confirmation to client
-      const dateFormatted = new Date(selectedDate).toLocaleDateString("pt-MZ", { day: "2-digit", month: "long" });
-      await sendSMS(clientPhone, smsPendente(clientName, business.name, dateFormatted, selectedTime));
       setStep("done");
+      // Send SMS in background — does not block the page
+      const dateFormatted = new Date(selectedDate).toLocaleDateString("pt-MZ", { day: "2-digit", month: "long" });
+      sendSMS(clientPhone, smsPendente(clientName, business.name, dateFormatted, selectedTime)).catch(() => {});
     }
     setSubmitting(false);
   }

@@ -50,9 +50,9 @@ export default function AppointmentsPage() {
       const dateFormatted = new Date(appt.date).toLocaleDateString("pt-MZ", { day: "2-digit", month: "long" });
       if (status === "confirmed") {
         const serviceName = (appt as any).service?.name || "Serviço";
-        await sendSMS(appt.client_phone, smsConfirmacao(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5), serviceName));
+        sendSMS(appt.client_phone, smsConfirmacao(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5), serviceName)).catch(() => {});
       } else if (status === "cancelled") {
-        await sendSMS(appt.client_phone, smsCancelamento(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5)));
+        sendSMS(appt.client_phone, smsCancelamento(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5))).catch(() => {});
       }
     }
   }
