@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const today = new Date().toISOString().split("T")[0];
   const todayAppts = appointments.filter((a) => a.date === today);
   const pendingAppts = appointments.filter((a) => a.status === "pending");
-  const upcoming = appointments.filter((a) => a.date >= today && a.status !== "cancelled").slice(0, 5);
+  const upcoming = appointments.filter((a) => a.date >= today && a.status !== "cancelled" && a.status !== "completed").slice(0, 5);
   const thisMonthRevenue = appointments.filter((a) => a.status === "completed" && a.date.startsWith(new Date().toISOString().slice(0, 7))).reduce((sum, a) => sum + ((a as any).service?.price_mzn || 0), 0);
 
   if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" /></div>;
