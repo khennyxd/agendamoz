@@ -2,13 +2,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Calendar, LayoutDashboard, List, Settings, LogOut, Menu, ExternalLink, CreditCard, AlertCircle } from "lucide-react";
+import { Calendar, LayoutDashboard, List, Settings, LogOut, Menu, ExternalLink, CreditCard, AlertCircle, Users } from "lucide-react";
 import { supabase, type Business } from "@/lib/supabase";
 
 const navItems = [
   { href: "/dashboard",              label: "Painel",       icon: LayoutDashboard },
   { href: "/dashboard/appointments", label: "Agendamentos", icon: Calendar },
   { href: "/dashboard/services",     label: "Serviços",     icon: List },
+  { href: "/dashboard/team",         label: "Equipa",       icon: Users },
   { href: "/dashboard/billing",      label: "Subscrição",   icon: CreditCard },
   { href: "/dashboard/settings",     label: "Definições",   icon: Settings },
 ];
@@ -23,9 +24,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
-      const { data } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
-      if (!data) { router.push("/dashboard/onboarding"); return; }
-      setBusiness(data);
+
+      // Check if owner first
+      const { data: ownedBiz } = await supabase
+        .from("businesses").select("*").eq("owner_id", user.id).single();
+
+      if (ownedBiz) { setBusiness(ownedBiz); return; }
+
+      // Check if team member
+      const { data: membership } = await supabase
+        .from("team_members")
+        .select("business_id")
+        .eq("user_id", user.id)
+        .eq("status", "active")
+        .single();
+
+      if (membership) {
+        const { data: memberBiz } = await supabase
+          .from("businesses").select("*").eq("id", membership.business_id).single();
+        if (memberBiz) { setBusiness(memberBiz); return; }
+      }
+
+      // No business found — go to onboarding
+      router.push("/dashboard/onboarding");
     }
     load();
   }, [router]);
