@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -16,19 +16,14 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: "AgendaMoz — Agendamentos para Clínicas & Salões",
-  description:
-    "A plataforma de agendamento mais simples de Moçambique. Gerencie consultas, serviços e clientes num só lugar.",
+  description: "A plataforma de agendamento mais simples de Moçambique. Gerencie consultas, serviços e clientes num só lugar.",
   keywords: ["agendamento", "clínica", "salão", "Moçambique", "Maputo"],
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className={`${fraunces.variable} ${jakarta.variable}`}>
-      <body className="font-body bg-dark-950 text-slate-200 antialiased">{children}</body>
+    <html lang="pt" className={`${outfit.variable} ${jakarta.variable}`}>
+      <body className="font-body bg-[#050508] text-slate-200 antialiased">{children}</body>
     </html>
   );
 }

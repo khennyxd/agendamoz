@@ -9,52 +9,37 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        teal: {
-          900: "#0a3840",
-          800: "#0D4F5C",
-          700: "#116070",
-          600: "#147a8a",
-          400: "#2da8c0",
-          100: "#d0f0f7",
-          50:  "#ebfafc",
+        night: {
+          950: "#050508",
+          900: "#08090f",
+          800: "#0c0e18",
+          700: "#111422",
+          600: "#161b2e",
         },
-        amber: {
-          500: "#F5A623",
-          400: "#f7b84b",
-          300: "#f9ca72",
-          100: "#fef3d6",
-        },
-        cream: "#FAF7F2",
-        ink:   "#1a1a2e",
-        // Dark theme colors
-        dark: {
-          950: "#080c14",
-          900: "#0d1117",
-          800: "#111827",
-          700: "#1a2332",
-          600: "#1e2d40",
-        },
-        blue: {
-          600: "#1e40af",
-          500: "#2563eb",
+        azure: {
+          900: "#0f1e3d",
+          800: "#162447",
+          700: "#1a2f5e",
+          600: "#1e3a8a",
+          500: "#1d4ed8",
           400: "#3b82f6",
           300: "#60a5fa",
           200: "#93c5fd",
           100: "#dbeafe",
-          50:  "#eff6ff",
+        },
+        amber: {
+          500: "#F5A623",
+          400: "#f7b84b",
         },
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "Georgia", "serif"],
+        display: ["var(--font-outfit)", "system-ui", "sans-serif"],
         body:    ["var(--font-jakarta)", "system-ui", "sans-serif"],
       },
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-      },
       animation: {
-        "fade-up":   "fadeUp 0.5s ease forwards",
-        "fade-in":   "fadeIn 0.4s ease forwards",
-        "slide-in":  "slideIn 0.4s ease forwards",
+        "fade-up":  "fadeUp 0.5s ease forwards",
+        "fade-in":  "fadeIn 0.4s ease forwards",
+        "slide-in": "slideIn 0.4s ease forwards",
       },
       keyframes: {
         fadeUp:  { "0%": { opacity: "0", transform: "translateY(20px)" }, "100%": { opacity: "1", transform: "translateY(0)" } },
