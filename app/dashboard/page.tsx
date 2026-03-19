@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, TrendingUp, Users, AlertCircle, Plus, ExternalLink } from "lucide-react";
 import { supabase, type Appointment, type Business } from "@/lib/supabase";
+import { useBusinessId } from "@/lib/useBusinessId";
 import { format, isToday, isTomorrow, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
 
@@ -24,20 +25,18 @@ export default function DashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { business: resolvedBusiness, loading: bizLoading } = useBusinessId();
+
   useEffect(() => {
     async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data: biz } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
-      setBusiness(biz);
-      if (biz) {
-        const { data: appts } = await supabase.from("appointments").select("*, service:services(name, price_mzn)").eq("business_id", biz.id).order("date", { ascending: true }).order("time", { ascending: true });
-        setAppointments(appts || []);
-      }
+      if (!resolvedBusiness) return;
+      setBusiness(resolvedBusiness);
+      const { data: appts } = await supabase.from("appointments").select("*, service:services(name, price_mzn)").eq("business_id", resolvedBusiness.id).order("date", { ascending: true }).order("time", { ascending: true });
+      setAppointments(appts || []);
       setLoading(false);
     }
-    load();
-  }, []);
+    if (!bizLoading) load();
+  }, [resolvedBusiness, bizLoading]);
 
   const today = new Date().toISOString().split("T")[0];
   const todayAppts = appointments.filter((a) => a.date === today);

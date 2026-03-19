@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Search, Calendar, Phone, X } from "lucide-react";
 import { supabase, type Appointment, type Service, type Business } from "@/lib/supabase";
+import { useBusinessId } from "@/lib/useBusinessId";
 import { format, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
 
@@ -24,22 +25,19 @@ export default function AppointmentsPage() {
   const [saving, setSaving] = useState(false);
   const [newAppt, setNewAppt] = useState({ client_name: "", client_phone: "", service_id: "", date: new Date().toISOString().split("T")[0], time: "09:00", notes: "" });
 
-  async function load() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data: biz } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+  const { business: resolvedBusiness, loading: bizLoading } = useBusinessId();
+
+  async function load(biz: Business) {
     setBusiness(biz);
-    if (biz) {
-      const [{ data: appts }, { data: svcs }] = await Promise.all([
-        supabase.from("appointments").select("*, service:services(name, price_mzn, duration_minutes)").eq("business_id", biz.id).order("date", { ascending: false }),
-        supabase.from("services").select("*").eq("business_id", biz.id).eq("is_active", true),
-      ]);
-      setAppointments(appts || []); setServices(svcs || []);
-    }
+    const [{ data: appts }, { data: svcs }] = await Promise.all([
+      supabase.from("appointments").select("*, service:services(name, price_mzn, duration_minutes)").eq("business_id", biz.id).order("date", { ascending: false }),
+      supabase.from("services").select("*").eq("business_id", biz.id).eq("is_active", true),
+    ]);
+    setAppointments(appts || []); setServices(svcs || []);
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!bizLoading && resolvedBusiness) load(resolvedBusiness); }, [resolvedBusiness, bizLoading]);
 
   async function updateStatus(id: string, status: Appointment["status"]) {
     await supabase.from("appointments").update({ status }).eq("id", id);
@@ -49,7 +47,7 @@ export default function AppointmentsPage() {
   async function createAppointment(e: React.FormEvent) {
     e.preventDefault(); if (!business) return; setSaving(true);
     const { error } = await supabase.from("appointments").insert({ ...newAppt, business_id: business.id, status: "confirmed" });
-    if (!error) { setShowModal(false); setNewAppt({ client_name: "", client_phone: "", service_id: "", date: new Date().toISOString().split("T")[0], time: "09:00", notes: "" }); load(); }
+    if (!error) { setShowModal(false); setNewAppt({ client_name: "", client_phone: "", service_id: "", date: new Date().toISOString().split("T")[0], time: "09:00", notes: "" }); if (business) load(business); }
     setSaving(false);
   }
 

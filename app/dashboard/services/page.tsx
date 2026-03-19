@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Plus, Edit2, Trash2, X, Clock, DollarSign } from "lucide-react";
 import { supabase, type Service, type Business } from "@/lib/supabase";
+import { useBusinessId } from "@/lib/useBusinessId";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
@@ -13,16 +14,16 @@ export default function ServicesPage() {
   const emptyForm = { name: "", duration_minutes: 30, price_mzn: 0, description: "" };
   const [form, setForm] = useState(emptyForm);
 
-  async function load() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    const { data: biz } = await supabase.from("businesses").select("*").eq("owner_id", user.id).single();
+  const { business: resolvedBusiness, loading: bizLoading } = useBusinessId();
+
+  async function load(biz: Business) {
     setBusiness(biz);
-    if (biz) { const { data } = await supabase.from("services").select("*").eq("business_id", biz.id).order("created_at"); setServices(data || []); }
+    const { data } = await supabase.from("services").select("*").eq("business_id", biz.id).order("created_at");
+    setServices(data || []);
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!bizLoading && resolvedBusiness) load(resolvedBusiness); }, [resolvedBusiness, bizLoading]);
 
   function openCreate() { setEditing(null); setForm(emptyForm); setShowModal(true); }
   function openEdit(s: Service) { setEditing(s); setForm({ name: s.name, duration_minutes: s.duration_minutes, price_mzn: s.price_mzn, description: s.description }); setShowModal(true); }
@@ -31,7 +32,7 @@ export default function ServicesPage() {
     e.preventDefault(); if (!business) return; setSaving(true);
     if (editing) { await supabase.from("services").update(form).eq("id", editing.id); }
     else { await supabase.from("services").insert({ ...form, business_id: business.id }); }
-    setShowModal(false); load(); setSaving(false);
+    setShowModal(false); if (business) load(business); setSaving(false);
   }
 
   async function deleteService(id: string) {
