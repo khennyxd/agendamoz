@@ -28,75 +28,52 @@ export default function LoginPage() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setLoading(true); setError("");
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      if (error.message.includes("Email not confirmed")) {
-        setError("Por favor confirme o seu email antes de entrar.");
-      } else {
-        setError("Email ou senha incorretos. Tente novamente.");
-      }
-    } else {
-      router.push("/dashboard");
-    }
+      setError(error.message.includes("Email not confirmed") ? "Por favor confirme o seu email antes de entrar." : "Email ou senha incorretos. Tente novamente.");
+    } else { router.push("/dashboard"); }
     setLoading(false);
   }
 
   async function handleGoogleLogin() {
-    setLoadingGoogle(true);
-    setError("");
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) {
-      setError("Erro ao entrar com Google. Tente novamente.");
-      setLoadingGoogle(false);
-    }
+    setLoadingGoogle(true); setError("");
+    const { error } = await supabase.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${window.location.origin}/dashboard` } });
+    if (error) { setError("Erro ao entrar com Google."); setLoadingGoogle(false); }
   }
 
   return (
-    <div className="min-h-screen bg-obsidian-950 cyber-bg flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Glow effects */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-400/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-violet-500/5 rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-5%] w-[400px] h-[400px] bg-royal-500/10 rounded-full blur-[120px] animate-float-slow" />
+        <div className="absolute bottom-[-10%] right-[-5%] w-[350px] h-[350px] bg-royal-600/8 rounded-full blur-[100px] animate-float-medium" />
+      </div>
 
-      <div className="relative w-full max-w-md animate-fade-up">
-        {/* Logo */}
+      <div className="relative w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center shadow-cyan-sm">
+          <Link href="/" className="inline-flex items-center gap-2 group">
+            <div className="w-10 h-10 bg-royal-500 rounded-xl flex items-center justify-center group-hover:bg-royal-400 transition-colors shadow-[0_0_20px_rgba(29,78,216,0.4)]">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-2xl font-black text-white">AgendaMoz</span>
+            <span className="font-display text-2xl font-bold text-white">AgendaMoz</span>
           </Link>
         </div>
 
-        <div className="bg-obsidian-800 border border-[rgba(0,229,255,0.1)] rounded-2xl p-8 shadow-cyan-sm">
-          <h1 className="font-display text-2xl font-black text-white mb-1">Bem-vindo de volta</h1>
+        <div className="card-glow p-8">
+          <h1 className="font-display text-2xl font-bold text-white mb-1">Bem-vindo de volta</h1>
           <p className="text-slate-500 text-sm mb-8">Entre na sua conta para continuar</p>
 
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">
-              {error}
-            </div>
-          )}
+          {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm px-4 py-3 rounded-xl mb-6">{error}</div>}
 
-          {/* Google */}
-          <button
-            onClick={handleGoogleLogin}
-            disabled={loadingGoogle}
-            className="w-full flex items-center justify-center gap-3 border border-[rgba(255,255,255,0.08)] bg-white/5 rounded-xl py-3 px-4 text-sm font-semibold text-slate-300 hover:bg-white/10 hover:border-white/15 transition-all duration-200 mb-6"
-          >
+          <button onClick={handleGoogleLogin} disabled={loadingGoogle} className="w-full flex items-center justify-center gap-3 border border-royal-500/25 bg-royal-500/8 rounded-xl py-3 px-4 text-sm font-semibold text-slate-300 hover:bg-royal-500/15 hover:border-royal-500/40 transition-all duration-200 mb-6">
             {loadingGoogle ? <div className="w-4 h-4 border-2 border-slate-400 border-t-transparent rounded-full animate-spin" /> : <GoogleIcon />}
             {loadingGoogle ? "A entrar..." : "Entrar com Google"}
           </button>
 
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-[rgba(0,229,255,0.08)]" />
-            <span className="text-xs text-slate-600 font-medium">ou com email</span>
-            <div className="flex-1 h-px bg-[rgba(0,229,255,0.08)]" />
+            <div className="flex-1 h-px bg-royal-500/15" />
+            <span className="text-xs text-slate-600">ou com email</span>
+            <div className="flex-1 h-px bg-royal-500/15" />
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-5">
@@ -114,7 +91,7 @@ export default function LoginPage() {
               </div>
             </div>
             <div className="flex justify-end">
-              <Link href="/reset-password" className="text-xs text-cyan-400/70 hover:text-cyan-400 transition-colors">Esqueceu a senha?</Link>
+              <Link href="/reset-password" className="text-xs text-sky-300/60 hover:text-sky-300 transition-colors">Esqueceu a senha?</Link>
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full justify-center mt-1">
               {loading ? "A entrar..." : "Entrar"}
@@ -123,9 +100,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-slate-600 mt-6">
             Não tem conta?{" "}
-            <Link href="/register" className="text-cyan-400 font-semibold hover:text-cyan-300 transition-colors">
-              Registar gratuitamente
-            </Link>
+            <Link href="/register" className="text-sky-300 font-semibold hover:text-white transition-colors">Registar gratuitamente</Link>
           </p>
         </div>
       </div>

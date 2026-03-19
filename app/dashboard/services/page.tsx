@@ -11,7 +11,6 @@ export default function ServicesPage() {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState<Service | null>(null);
-
   const emptyForm = { name: "", duration_minutes: 30, price_mzn: 0, description: "" };
   const [form, setForm] = useState(emptyForm);
 
@@ -36,11 +35,8 @@ export default function ServicesPage() {
     e.preventDefault();
     if (!business) return;
     setSaving(true);
-    if (editing) {
-      await supabase.from("services").update(form).eq("id", editing.id);
-    } else {
-      await supabase.from("services").insert({ ...form, business_id: business.id });
-    }
+    if (editing) { await supabase.from("services").update(form).eq("id", editing.id); }
+    else { await supabase.from("services").insert({ ...form, business_id: business.id }); }
     setShowModal(false);
     load();
     setSaving(false);
@@ -52,14 +48,14 @@ export default function ServicesPage() {
     setServices((prev) => prev.filter((s) => s.id !== id));
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-teal-800 border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-4 border-royal-500 border-t-transparent rounded-full animate-spin" /></div>;
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-3xl font-bold">Serviços</h1>
-          <p className="text-gray-500 text-sm mt-1">Gerencie os serviços que oferece</p>
+          <h1 className="font-display text-3xl font-bold text-white">Serviços</h1>
+          <p className="text-slate-500 text-sm mt-1">Gerencie os serviços que oferece</p>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2.5">
           <Plus className="w-4 h-4" /> Novo serviço
@@ -67,40 +63,36 @@ export default function ServicesPage() {
       </div>
 
       {services.length === 0 ? (
-        <div className="card text-center py-16">
-          <div className="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <DollarSign className="w-8 h-8 text-teal-600" />
+        <div className="card-glow text-center py-16">
+          <div className="w-16 h-16 bg-royal-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <DollarSign className="w-8 h-8 text-sky-300" />
           </div>
-          <h3 className="font-display text-xl font-bold mb-2">Nenhum serviço ainda</h3>
-          <p className="text-gray-500 text-sm mb-6">Adicione os seus serviços para que os clientes possam reservar</p>
-          <button onClick={openCreate} className="btn-primary mx-auto">
-            Adicionar primeiro serviço
-          </button>
+          <h3 className="font-display text-xl font-bold text-white mb-2">Nenhum serviço ainda</h3>
+          <p className="text-slate-500 text-sm mb-6">Adicione os seus serviços para que os clientes possam reservar</p>
+          <button onClick={openCreate} className="btn-primary mx-auto">Adicionar primeiro serviço</button>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {services.map((service) => (
-            <div key={service.id} className="card hover:shadow-md transition-shadow">
+            <div key={service.id} className="card-glow hover:scale-[1.01] transition-all duration-200">
               <div className="flex items-start justify-between mb-3">
-                <h3 className="font-display text-lg font-semibold">{service.name}</h3>
+                <h3 className="font-display text-lg font-semibold text-white">{service.name}</h3>
                 <div className="flex items-center gap-1 ml-2 flex-shrink-0">
-                  <button onClick={() => openEdit(service)} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-teal-700 transition-colors">
+                  <button onClick={() => openEdit(service)} className="p-2 hover:bg-royal-500/10 rounded-lg text-slate-500 hover:text-sky-300 transition-colors">
                     <Edit2 className="w-4 h-4" />
                   </button>
-                  <button onClick={() => deleteService(service.id)} className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 hover:text-red-600 transition-colors">
+                  <button onClick={() => deleteService(service.id)} className="p-2 hover:bg-red-500/10 rounded-lg text-slate-500 hover:text-red-400 transition-colors">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-              {service.description && <p className="text-gray-500 text-sm mb-4 leading-relaxed">{service.description}</p>}
+              {service.description && <p className="text-slate-500 text-sm mb-4 leading-relaxed">{service.description}</p>}
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1.5 text-sm text-gray-600">
-                  <Clock className="w-4 h-4 text-teal-600" />
-                  {service.duration_minutes} min
+                <div className="flex items-center gap-1.5 text-sm text-slate-400">
+                  <Clock className="w-4 h-4 text-sky-300/60" />{service.duration_minutes} min
                 </div>
-                <div className="flex items-center gap-1.5 text-sm font-semibold text-teal-800">
-                  <DollarSign className="w-4 h-4" />
-                  {service.price_mzn.toLocaleString("pt-MZ")} MZN
+                <div className="flex items-center gap-1.5 text-sm font-semibold text-sky-300">
+                  <DollarSign className="w-4 h-4" />{service.price_mzn.toLocaleString("pt-MZ")} MZN
                 </div>
               </div>
             </div>
@@ -108,34 +100,32 @@ export default function ServicesPage() {
         </div>
       )}
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowModal(false)} />
+          <div className="relative bg-navy-800 border border-royal-500/25 rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="font-display text-xl font-bold">{editing ? "Editar serviço" : "Novo serviço"}</h2>
-              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-xl">
+              <h2 className="font-display text-xl font-bold text-white">{editing ? "Editar serviço" : "Novo serviço"}</h2>
+              <button onClick={() => setShowModal(false)} className="p-2 hover:bg-royal-500/10 rounded-xl text-slate-400 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-
             <form onSubmit={save} className="flex flex-col gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Nome do serviço</label>
+                <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Nome do serviço</label>
                 <input className="input" placeholder="Ex: Consulta de clínica geral" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Descrição (opcional)</label>
+                <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Descrição (opcional)</label>
                 <textarea className="input resize-none" rows={2} placeholder="Breve descrição do serviço..." value={form.description} onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Duração (minutos)</label>
+                  <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Duração (min)</label>
                   <input type="number" className="input" min={5} step={5} value={form.duration_minutes} onChange={(e) => setForm((p) => ({ ...p, duration_minutes: Number(e.target.value) }))} required />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Preço (MZN)</label>
+                  <label className="block text-xs font-semibold mb-2 text-slate-400 uppercase tracking-wider">Preço (MZN)</label>
                   <input type="number" className="input" min={0} step={50} value={form.price_mzn} onChange={(e) => setForm((p) => ({ ...p, price_mzn: Number(e.target.value) }))} required />
                 </div>
               </div>
