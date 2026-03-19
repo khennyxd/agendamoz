@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Plus, Search, Calendar, Phone, X } from "lucide-react";
 import { supabase, type Appointment, type Service, type Business } from "@/lib/supabase";
 import { useBusinessId } from "@/lib/useBusinessId";
+import { sendSMS, smsConfirmacao, smsCancelamento } from "@/lib/sms";
 import { format, parseISO } from "date-fns";
 import { pt } from "date-fns/locale";
 
@@ -42,6 +43,18 @@ export default function AppointmentsPage() {
   async function updateStatus(id: string, status: Appointment["status"]) {
     await supabase.from("appointments").update({ status }).eq("id", id);
     setAppointments((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
+
+    // Send SMS on confirm or cancel
+    const appt = appointments.find(a => a.id === id);
+    if (appt && business) {
+      const dateFormatted = new Date(appt.date).toLocaleDateString("pt-MZ", { day: "2-digit", month: "long" });
+      if (status === "confirmed") {
+        const serviceName = (appt as any).service?.name || "Serviço";
+        await sendSMS(appt.client_phone, smsConfirmacao(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5), serviceName));
+      } else if (status === "cancelled") {
+        await sendSMS(appt.client_phone, smsCancelamento(appt.client_name, business.name, dateFormatted, appt.time.slice(0,5)));
+      }
+    }
   }
 
   async function createAppointment(e: React.FormEvent) {
