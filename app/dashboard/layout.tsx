@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Calendar, LayoutDashboard, List, Settings, LogOut, Menu, ExternalLink, CreditCard, AlertCircle, Users } from "lucide-react";
+import { Calendar, LayoutDashboard, List, Settings, LogOut, Menu, ExternalLink, CreditCard, AlertCircle, Users, BarChart3 } from "lucide-react";
 import { supabase, type Business } from "@/lib/supabase";
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/dashboard/appointments", label: "Agendamentos", icon: Calendar },
   { href: "/dashboard/services",     label: "Serviços",     icon: List },
   { href: "/dashboard/team",         label: "Equipa",       icon: Users },
+  { href: "/dashboard/reports",      label: "Relatórios",   icon: BarChart3 },
   { href: "/dashboard/billing",      label: "Subscrição",   icon: CreditCard },
   { href: "/dashboard/settings",     label: "Definições",   icon: Settings },
 ];
