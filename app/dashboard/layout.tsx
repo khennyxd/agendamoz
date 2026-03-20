@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Calendar, List, Users, BarChart3,
   CreditCard, Globe, DollarSign, Menu, ChevronDown,
-  AlertCircle, HelpCircle, LogOut, User, CheckCircle,
+  AlertCircle, HelpCircle, LogOut, User, CheckCircle, Target, X,
 } from "lucide-react";
 import { supabase, type Business } from "@/lib/supabase";
 
@@ -42,6 +42,103 @@ const navSections = [
     ],
   },
 ];
+
+
+function GoalWidget({ business }: { business: any }) {
+  const [goal, setGoal] = useState<number>(0);
+  const [showModal, setShowModal] = useState(false);
+  const [goalInput, setGoalInput] = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("revenue_goal");
+    if (saved) setGoal(Number(saved));
+  }, []);
+
+  // Get current month revenue
+  const [revenue, setRevenue] = useState(0);
+  useEffect(() => {
+    async function loadRevenue() {
+      if (!business?.id) return;
+      const thisMonth = new Date().toISOString().slice(0, 7);
+      const { data } = await supabase
+        .from("appointments")
+        .select("service:services(price_mzn)")
+        .eq("business_id", business.id)
+        .eq("status", "completed")
+        .gte("date", thisMonth + "-01");
+      const total = (data || []).reduce((s: number, a: any) => s + (a.service?.price_mzn || 0), 0);
+      setRevenue(total);
+    }
+    loadRevenue();
+  }, [business]);
+
+  function fmtMoney(val: number) {
+    if (val >= 1000000) return `MZN ${(val/1000000).toFixed(1)}M`;
+    if (val >= 1000) return `MZN ${(val/1000).toFixed(1)}k`;
+    return `MZN ${val}`;
+  }
+
+  function saveGoal() {
+    const val = Number(goalInput.replace(/[^0-9]/g, ""));
+    setGoal(val);
+    localStorage.setItem("revenue_goal", String(val));
+    setShowModal(false);
+    setGoalInput("");
+  }
+
+  const goalProgress = goal > 0 ? Math.min((revenue / goal) * 100, 100) : 0;
+
+  return (
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="hidden sm:flex flex-col items-start bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 hover:border-purple-300 transition-all duration-200 min-w-[160px]"
+      >
+        <div className="flex items-center justify-between w-full mb-1">
+          <div className="flex items-center gap-1">
+            <Target className="w-3 h-3 text-purple-500" />
+            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Meta mensal</span>
+          </div>
+          {goal > 0 && <span className="text-[10px] text-purple-600 font-bold">{goalProgress.toFixed(0)}%</span>}
+        </div>
+        <p className="text-xs font-bold text-gray-900">
+          {fmtMoney(revenue)}{goal > 0 && <span className="text-gray-400 font-normal"> / {fmtMoney(goal)}</span>}
+        </p>
+        {goal > 0 ? (
+          <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+            <div className="bg-purple-500 h-1 rounded-full transition-all duration-700" style={{ width: `${goalProgress}%` }} />
+          </div>
+        ) : (
+          <p className="text-[10px] text-purple-500 font-medium mt-0.5">+ Definir meta</p>
+        )}
+      </button>
+
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setShowModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-lg font-bold text-gray-900">Meta de faturamento</h2>
+              <button onClick={() => setShowModal(false)} className="p-1.5 hover:bg-gray-100 rounded-xl text-gray-500"><X className="w-4 h-4" /></button>
+            </div>
+            <p className="text-gray-500 text-sm mb-4">Define uma meta mensal para acompanhar o teu progresso</p>
+            <input className="input mb-3" placeholder="Ex: 50000" value={goalInput} onChange={(e) => setGoalInput(e.target.value)} type="number" min="0" />
+            {goalInput && <p className="text-xs text-gray-400 mb-4">= MZN {Number(goalInput).toLocaleString("pt-MZ")}</p>}
+            <div className="flex gap-3">
+              <button onClick={saveGoal} className="btn-primary flex-1 justify-center text-sm py-2.5">Guardar</button>
+              {goal > 0 && (
+                <button onClick={() => { setGoal(0); localStorage.removeItem("revenue_goal"); setShowModal(false); }}
+                  className="border border-gray-300 text-gray-600 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-50">
+                  Remover
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -166,7 +263,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 onClick={() => toggleSection(section.key)}
                 className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group"
               >
-                <span className="text-[10px] font-semibold text-gray-400 tracking-widest group-hover:text-gray-600 transition-colors">
+                <span className="text-xs font-bold text-gray-400 tracking-wide group-hover:text-gray-500 transition-colors">
                   {section.label}
                 </span>
                 <ChevronDown className={`w-3 h-3 text-gray-300 transition-transform duration-200 ${isCollapsed ? "-rotate-90" : ""}`} />
@@ -184,7 +281,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-0.5 transition-all duration-150 ${
                         active
                           ? "bg-purple-600 text-white"
-                          : "text-gray-600 hover:bg-purple-50 hover:text-purple-700"
+                          : "text-gray-800 hover:bg-purple-50 hover:text-purple-700"
                       }`}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
@@ -236,14 +333,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* Top bar with profile */}
         <header className="bg-white border-b border-gray-100 px-4 py-2.5 flex items-center justify-between sticky top-0 z-40">
-          {/* Mobile menu */}
-          <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
-            <Menu className="w-5 h-5" />
-          </button>
-          <div className="hidden md:block" />
+          {/* Left — mobile menu + business name + date */}
+          <div className="flex items-center gap-3">
+            <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 text-gray-600">
+              <Menu className="w-5 h-5" />
+            </button>
+            {business && (
+              <div className="hidden md:block">
+                <p className="text-sm font-bold text-gray-900 leading-none">Equipa de {business.name}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{new Date().toLocaleDateString("pt-MZ", { weekday: "long", day: "numeric", month: "long" })}</p>
+              </div>
+            )}
+          </div>
 
-          {/* Right side — goal widget placeholder + profile */}
+          {/* Right side — goal widget + profile */}
           <div className="flex items-center gap-3" ref={profileRef}>
+            {/* Revenue goal widget */}
+            <GoalWidget business={business} />
             {/* Profile button */}
             <div className="relative">
               <button

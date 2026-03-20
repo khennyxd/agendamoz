@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { Calendar, TrendingUp, Users, CheckCircle, ChevronRight, Phone, Target, X } from "lucide-react";
+import { Calendar, TrendingUp, Users, CheckCircle, ChevronRight, Phone } from "lucide-react";
 import { supabase, type Appointment, type Service } from "@/lib/supabase";
 import { useBusinessId } from "@/lib/useBusinessId";
 import { format, isToday, isTomorrow, parseISO, startOfMonth, subMonths } from "date-fns";
@@ -19,11 +19,6 @@ function StatusBadge({ status }: { status: Appointment["status"] }) {
   };
   const { label, cls } = map[status];
   return <span className={cls}>{label}</span>;
-}
-
-function fmtMoney(val: number) {
-  if (val >= 1000) return `MZN ${(val/1000).toFixed(1)}k`;
-  return `MZN ${val.toLocaleString("pt-MZ")}`;
 }
 
 // Simple bar chart component
@@ -53,23 +48,9 @@ export default function DashboardPage() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [isFiltering, setIsFiltering] = useState(false);
 
-  // Revenue goal
-  const [goal, setGoal] = useState<number>(0);
-  const [showGoalModal, setShowGoalModal] = useState(false);
-  const [goalInput, setGoalInput] = useState("");
 
-  useEffect(() => {
-    const saved = localStorage.getItem("revenue_goal");
-    if (saved) setGoal(Number(saved));
-  }, []);
 
-  function saveGoal() {
-    const val = Number(goalInput.replace(/[^0-9]/g,""));
-    setGoal(val);
-    localStorage.setItem("revenue_goal", String(val));
-    setShowGoalModal(false);
-    setGoalInput("");
-  }
+
 
   useEffect(() => {
     async function load() {
@@ -130,8 +111,7 @@ export default function DashboardPage() {
     .filter(a => a.date >= today && a.status === "pending")
     .slice(0, 3);
 
-  // Goal progress
-  const goalProgress = goal > 0 ? Math.min((revenue / goal) * 100, 100) : 0;
+
 
   if (loading || bizLoading) return (
     <div className="flex items-center justify-center h-64">
@@ -142,40 +122,7 @@ export default function DashboardPage() {
   return (
     <div className={`max-w-6xl mx-auto transition-all duration-300 ${isFiltering ? "opacity-40 blur-sm" : "opacity-100 blur-none"}`}>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-gray-900">Equipa de {business?.name}</h1>
-          <p className="text-gray-400 text-sm mt-0.5">{format(new Date(), "EEEE, d MMMM yyyy", { locale: pt })}</p>
-        </div>
 
-        {/* Revenue goal widget */}
-        <button
-          onClick={() => setShowGoalModal(true)}
-          className="hidden sm:flex flex-col items-start bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm hover:border-purple-300 hover:shadow-md transition-all duration-200 min-w-[180px]"
-        >
-          <div className="flex items-center justify-between w-full mb-2">
-            <div className="flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-purple-500" />
-              <span className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Meta de faturamento</span>
-            </div>
-            {goal > 0 && <span className="text-[10px] text-purple-600 font-bold">{goalProgress.toFixed(0)}%</span>}
-          </div>
-          <p className="text-sm font-bold text-gray-900 mb-2">
-            {fmtMoney(revenue)} {goal > 0 && <span className="text-gray-400 font-normal">/ {fmtMoney(goal)}</span>}
-          </p>
-          {goal > 0 ? (
-            <div className="w-full bg-gray-100 rounded-full h-1.5">
-              <div
-                className="bg-purple-500 h-1.5 rounded-full transition-all duration-700"
-                style={{ width: `${goalProgress}%` }}
-              />
-            </div>
-          ) : (
-            <p className="text-[11px] text-purple-500 font-medium">+ Definir meta</p>
-          )}
-        </button>
-      </div>
 
       {/* Filters */}
       <div className="flex items-center justify-between mb-5">
