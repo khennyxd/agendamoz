@@ -57,11 +57,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white text-gray-900 overflow-x-hidden">
 
       {/* NAV */}
-      <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-white border-b border-gray-100 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/amlogo.svg" alt="AgendaMoz" className="h-24 w-auto" />
-            <span className="font-display text-xl font-bold text-gray-900">AgendaMoz</span>
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-8 w-auto" /><span className="font-display text-xl text-gray-900 ml-1"><span className="font-bold">Agenda</span><span className="font-normal">Moz</span></span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
             {["#funcionalidades","#precos","#testemunhos"].map((href,i) => (
