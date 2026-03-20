@@ -8,7 +8,7 @@ export default function TermosPage() {
       <header className="border-b border-azure-900/50 px-4 py-5">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/amlogo.svg" alt="AgendaMoz" className="h-8 w-auto" />
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-12 w-auto" />
             <span className="font-display text-xl font-bold text-white">AgendaMoz</span>
           </Link>
           <Link href="/" className="text-sm text-slate-500 hover:text-azure-400 transition-colors">← Voltar</Link>
