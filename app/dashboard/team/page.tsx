@@ -117,7 +117,7 @@ export default function TeamPage() {
 
         {/* Owner */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-white border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Proprietário</p>
           </div>
           <div className="px-6 py-4 flex items-center gap-4">
@@ -135,7 +135,7 @@ export default function TeamPage() {
         {/* All members */}
         {members.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <div className="px-6 py-4 bg-white border-b border-gray-100">
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Membros</p>
             </div>
             <div className="divide-y divide-gray-100">
@@ -192,7 +192,7 @@ export default function TeamPage() {
 
       {/* Owner card */}
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-4">
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <div className="px-6 py-4 bg-white border-b border-gray-100">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Proprietário</p>
         </div>
         <div className="px-6 py-4 flex items-center gap-4">
@@ -210,7 +210,7 @@ export default function TeamPage() {
       {/* Team members */}
       {members.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <div className="px-6 py-4 bg-white border-b border-gray-100">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Membros da equipa</p>
           </div>
           <div className="divide-y divide-gray-100">
