@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Raleway, Poppins, Inter } from "next/font/google";
 import "./globals.css";
+
+const raleway = Raleway({
+  subsets: ["latin"],
+  variable: "--font-raleway",
+  weight: ["400","500","600","700","800","900"],
+  display: "swap",
+});
 
 const poppins = Poppins({
   subsets: ["latin"],
   variable: "--font-poppins",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400","500","600","700","800","900"],
   display: "swap",
 });
 
@@ -22,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className={`${poppins.variable} ${inter.variable}`}>
+    <html lang="pt" className={`${raleway.variable} ${poppins.variable} ${inter.variable}`}>
       <body className="font-body bg-white text-gray-900 antialiased">{children}</body>
     </html>
   );

@@ -9,12 +9,15 @@ import Link from "next/link";
 export default function PublicPagePage() {
   const { business, loading } = useBusinessId();
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState("");
   const limits = getPlanLimits(business?.plan || null);
   const isEmpresarial = business?.plan === "empresarial";
 
+  useEffect(() => { setOrigin(window.location.origin); }, []);
+
   function copyLink() {
     if (!business) return;
-    navigator.clipboard.writeText(`${window.location.origin}/book/${business.slug}`);
+    navigator.clipboard.writeText(`${origin}/book/${business?.slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }

@@ -80,19 +80,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const showBanner = business && !business.is_active;
 
   const Sidebar = () => (
-    <aside className="flex flex-col h-full bg-white border-r border-gray-100">
+    <aside className="flex flex-col h-full bg-[#1a0533] border-r border-purple-900/30">
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-gray-100">
+      <div className="px-5 py-4 border-b border-purple-900/30">
         <Link href="/" className="flex items-center gap-1.5">
           <img src="/amlogo.svg" alt="AgendaMoz" className="h-8 w-auto" />
-          <span className="font-display text-lg text-gray-900 ml-0.5">
-            <span className="font-bold">Agenda</span><span className="font-normal">Moz</span>
+          <span className="font-display text-lg text-white ml-0.5">
+            <span className="font-bold text-white">Agenda</span><span className="font-normal text-purple-200">Moz</span>
           </span>
         </Link>
         {business && (
           <div className="mt-2 px-1">
-            <p className="text-xs text-gray-400 uppercase tracking-wider">Negócio</p>
-            <p className="text-sm font-semibold text-gray-700 truncate mt-0.5">{business.name}</p>
+            <p className="text-xs text-purple-300 uppercase tracking-wider">Negócio</p>
+            <p className="text-sm font-semibold text-purple-100 truncate mt-0.5">{business.name}</p>
           </div>
         )}
       </div>
@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.label} className="mb-4">
-            <p className="text-[10px] font-semibold text-gray-400 tracking-widest px-3 mb-1.5">
+            <p className="text-[10px] font-semibold text-purple-400 tracking-widest px-3 mb-1.5">
               {section.label}
             </p>
             {section.items.map(({ href, label, icon: Icon, badge }: any) => {
@@ -124,20 +124,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-0.5 transition-all duration-150 ${
                     active
                       ? "bg-purple-600 text-white"
-                      : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      : "text-white hover:bg-purple-700/40 hover:text-white"
                   }`}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="flex-1">{label}</span>
                   {badge && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                      active ? "bg-white/20 text-white" : "bg-purple-100 text-purple-600"
+                      active ? "bg-white/20 text-white" : "bg-purple-700 text-purple-200"
                     }`}>
                       {badge}
                     </span>
                   )}
                   {label === "Subscrição" && !business?.is_active && (
-                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                    <span className="w-1.5 h-1.5 bg-red-400 rounded-full" />
                   )}
                 </Link>
               );
@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-1">
             <img src="/amlogo.svg" alt="AgendaMoz" className="h-7 w-auto" />
             <span className="font-display text-base text-gray-900">
-              <span className="font-bold">Agenda</span><span className="font-normal">Moz</span>
+              <span className="font-bold text-white">Agenda</span><span className="font-normal text-purple-200">Moz</span>
             </span>
           </div>
           <div className="w-9" />
