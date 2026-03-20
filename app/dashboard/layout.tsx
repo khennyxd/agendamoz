@@ -82,17 +82,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const Sidebar = () => (
     <aside className="flex flex-col h-full bg-[#1a0533] border-r border-purple-900/30">
       {/* Logo */}
-      <div className="px-5 py-4 border-b border-purple-900/30">
+      <div className="px-5 py-4 border-b border-gray-200 bg-white">
         <Link href="/" className="flex items-center gap-1.5">
           <img src="/amlogo.svg" alt="AgendaMoz" className="h-8 w-auto" />
           <span className="font-display text-lg text-white ml-0.5">
-            <span className="font-bold text-white">Agenda</span><span className="font-normal text-purple-200">Moz</span>
+            <span className="font-bold text-gray-900">Agenda</span><span className="font-normal text-gray-500">Moz</span>
           </span>
         </Link>
         {business && (
           <div className="mt-2 px-1">
-            <p className="text-xs text-purple-300 uppercase tracking-wider">Negócio</p>
-            <p className="text-sm font-semibold text-purple-100 truncate mt-0.5">{business.name}</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wider">Negócio</p>
+            <p className="text-sm font-semibold text-gray-800 truncate mt-0.5">{business.name}</p>
           </div>
         )}
       </div>
@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <div className="flex items-center gap-1">
             <img src="/amlogo.svg" alt="AgendaMoz" className="h-7 w-auto" />
             <span className="font-display text-base text-gray-900">
-              <span className="font-bold text-white">Agenda</span><span className="font-normal text-purple-200">Moz</span>
+              <span className="font-bold text-gray-900">Agenda</span><span className="font-normal text-gray-500">Moz</span>
             </span>
           </div>
           <div className="w-9" />
