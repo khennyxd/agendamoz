@@ -42,8 +42,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <img src="/amlogo.svg" alt="AgendaMoz" className="h-28 w-auto" />
-            <span className="font-display text-2xl font-bold text-gray-900">AgendaMoz</span>
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-10 w-auto" /><span className="font-display text-2xl text-gray-900 ml-1"><span className="font-bold">Agenda</span><span className="font-normal">Moz</span></span>
           </Link>
         </div>
 
