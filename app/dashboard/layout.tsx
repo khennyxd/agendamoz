@@ -60,9 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <aside className="flex flex-col h-full bg-white border-r border-gray-200">
       <div className="p-6 border-b border-gray-200">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-            <Calendar className="w-4 h-4 text-white" />
-          </div>
+          <img src="/amlogo.svg" alt="AgendaMoz" className="h-8 w-auto" />
           <span className="font-display text-lg font-bold text-gray-900">AgendaMoz</span>
         </Link>
       </div>

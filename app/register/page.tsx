@@ -152,10 +152,8 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-teal-800 rounded-xl flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display text-2xl font-bold text-teal-800">AgendaMoz</span>
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-10 w-auto" />
+            <span className="font-display text-2xl font-bold text-gray-900">AgendaMoz</span>
           </Link>
         </div>
 

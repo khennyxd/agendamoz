@@ -42,9 +42,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-10 w-auto" />
             <span className="font-display text-2xl font-bold text-gray-900">AgendaMoz</span>
           </Link>
         </div>
