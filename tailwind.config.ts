@@ -30,8 +30,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-outfit)", "system-ui", "sans-serif"],
-        body:    ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        display: ["var(--font-poppins)", "system-ui", "sans-serif"],
+        body:    ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       animation: {
         "fade-up":  "fadeUp 0.5s ease forwards",

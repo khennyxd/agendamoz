@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Poppins, Inter } from "next/font/google";
 import "./globals.css";
 
-const outfit  = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "AgendaMoz — Agendamentos para Clínicas & Salões",
@@ -12,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className={`${outfit.variable} ${jakarta.variable}`}>
+    <html lang="pt" className={`${poppins.variable} ${inter.variable}`}>
       <body className="font-body bg-white text-gray-900 antialiased">{children}</body>
     </html>
   );
