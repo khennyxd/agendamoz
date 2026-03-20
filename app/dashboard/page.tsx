@@ -48,6 +48,24 @@ export default function DashboardPage() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [isFiltering, setIsFiltering] = useState(false);
 
+  // Revenue goal
+  const [goal, setGoal] = useState<number>(0);
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [goalInput, setGoalInput] = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("revenue_goal");
+    if (saved) setGoal(Number(saved));
+  }, []);
+
+  function saveGoal() {
+    const val = Number(goalInput.replace(/[^0-9]/g,""));
+    setGoal(val);
+    localStorage.setItem("revenue_goal", String(val));
+    setShowGoalModal(false);
+    setGoalInput("");
+  }
+
 
 
 
