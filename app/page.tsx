@@ -60,7 +60,7 @@ export default function LandingPage() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200" : "bg-transparent"}`}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/amlogo.svg" alt="AgendaMoz" className="h-12 w-auto" />
+            <img src="/amlogo.svg" alt="AgendaMoz" className="h-24 w-auto" />
             <span className="font-display text-xl font-bold text-gray-900">AgendaMoz</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
@@ -274,7 +274,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <img src="/amlogo.svg" alt="AgendaMoz" className="h-12 w-auto" />
+              <img src="/amlogo.svg" alt="AgendaMoz" className="h-24 w-auto" />
               <span className="font-display text-white text-lg font-bold">AgendaMoz</span>
             </div>
             <p className="text-sm max-w-xs">Agendamentos simples para clínicas e salões em Moçambique.</p>
