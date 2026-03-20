@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const showBanner = business && !business.is_active;
 
   const Sidebar = () => (
-    <aside className="flex flex-col h-full bg-[#1a0533] border-r border-purple-900/30">
+    <aside className="flex flex-col h-full bg-white border-r border-gray-100">
       {/* Logo */}
       <div className="px-5 py-4 border-b border-gray-200 bg-white">
         <Link href="/" className="flex items-center gap-1.5">
@@ -111,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <nav className="flex-1 px-3 py-3 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.label} className="mb-4">
-            <p className="text-[10px] font-semibold text-purple-400 tracking-widest px-3 mb-1.5">
+            <p className="text-[10px] font-semibold text-gray-400 tracking-widest px-3 mb-1.5">
               {section.label}
             </p>
             {section.items.map(({ href, label, icon: Icon, badge }: any) => {
@@ -124,14 +124,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium mb-0.5 transition-all duration-150 ${
                     active
                       ? "bg-purple-600 text-white"
-                      : "text-white hover:bg-purple-700/40 hover:text-white"
+                      : "text-gray-600 hover:bg-purple-50 hover:text-purple-700"
                   }`}
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="flex-1">{label}</span>
                   {badge && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                      active ? "bg-white/20 text-white" : "bg-purple-700 text-purple-200"
+                      active ? "bg-white/20 text-white" : "bg-purple-100 text-purple-600"
                     }`}>
                       {badge}
                     </span>
