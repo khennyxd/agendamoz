@@ -136,6 +136,86 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* BEFORE VS AFTER */}
+      <section className="py-24 px-4 sm:px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <Reveal className="text-center mb-16">
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Transformação real</p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Antes vs Depois</h2>
+            <p className="text-gray-500 text-lg">Veja o impacto real nas clínicas e salões que usam o AgendaMoz</p>
+          </Reveal>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* ANTES */}
+            <Reveal>
+              <div className="bg-gray-50 border-2 border-gray-200 rounded-2xl p-8">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-gray-200 rounded-xl flex items-center justify-center">
+                    <span className="text-gray-500 font-bold text-lg">✕</span>
+                  </div>
+                  <div>
+                    <p className="font-display text-xl font-bold text-gray-700">Antes do AgendaMoz</p>
+                    <p className="text-gray-500 text-sm">Gestão manual tradicional</p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {[
+                    { label: "Tempo de resposta",       value: "30 min – 4 horas" },
+                    { label: "Taxa de faltas",           value: "20 – 40%" },
+                    { label: "Horas ao telefone/dia",   value: "3 – 4 horas" },
+                    { label: "Agendamentos perdidos",   value: "15 – 20/mês" },
+                    { label: "Satisfação do cliente",   value: "3.5 / 5" },
+                  ].map(({ label, value }) => (
+                    <div key={label} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                      <p className="text-gray-600 text-sm">{label}</p>
+                      <p className="font-semibold text-gray-700 text-sm">{value}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 bg-gray-200 rounded-xl p-4">
+                  <p className="text-gray-600 text-sm leading-relaxed"><strong className="text-gray-700">Resultado:</strong> Perda de clientes, equipa stressada e receita a escapar todos os meses.</p>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* DEPOIS */}
+            <Reveal>
+              <div className="bg-purple-600 border-2 border-purple-600 rounded-2xl p-8 text-white">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <span className="text-white font-bold text-lg">✓</span>
+                  </div>
+                  <div>
+                    <p className="font-display text-xl font-bold text-white">Com o AgendaMoz</p>
+                    <p className="text-purple-200 text-sm">Agendamento automático online</p>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4">
+                  {[
+                    { label: "Tempo de resposta",       value: "Instantâneo (24/7)", badge: "-99%" },
+                    { label: "Taxa de faltas",           value: "5 – 8%",             badge: "-75%" },
+                    { label: "Horas ao telefone/dia",   value: "30 minutos",          badge: "-85%" },
+                    { label: "Agendamentos perdidos",   value: "0 – 2/mês",           badge: "-90%" },
+                    { label: "Satisfação do cliente",   value: "4.9 / 5",             badge: "+40%" },
+                  ].map(({ label, value, badge }) => (
+                    <div key={label} className="flex items-center justify-between py-3 border-b border-white/20 last:border-0">
+                      <p className="text-purple-100 text-sm">{label}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-white text-sm">{value}</p>
+                        <span className="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">{badge}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 bg-white/15 rounded-xl p-4">
+                  <p className="text-purple-100 text-sm leading-relaxed"><strong className="text-white">Resultado:</strong> Mais clientes, equipa focada no atendimento e faturamento a crescer mês a mês.</p>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
       {/* FOR WHO */}
       <section className="py-16 px-4 sm:px-6 bg-purple-50 border-y border-purple-100">
         <div className="max-w-6xl mx-auto text-center">
