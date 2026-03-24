@@ -5,22 +5,22 @@ import { useState, useEffect, useRef } from "react";
 import { Calendar, Clock, Users, Star, ChevronRight, CheckCircle, Menu, X, Stethoscope, Scissors, PhoneCall } from "lucide-react";
 
 const features = [
-  { icon: Calendar,  title: "Agenda Online 24/7",      desc: "Os seus clientes marcam consultas a qualquer hora, mesmo fora do horário de atendimento." },
-  { icon: Clock,     title: "Sem Filas de Espera",     desc: "Elimine as filas. Cada cliente sabe exatamente o seu horário antes de chegar." },
-  { icon: PhoneCall, title: "Lembretes Automáticos",   desc: "Reduza faltas com lembretes por SMS enviados automaticamente aos clientes." },
-  { icon: Users,     title: "Gestão de Clientes",      desc: "Histórico completo de cada cliente, serviços e preferências num só lugar." },
+  { icon: Calendar,  title: "Agenda Online 24/7",      desc: "Receba marcações a qualquer hora, sem chamadas nem interrupções.." },
+  { icon: Clock,     title: "Sem Filas de Espera",     desc: "Atendimento organizado, horários definidos e clientes mais satisfeitos." },
+  { icon: PhoneCall, title: "Lembretes Automáticos",   desc: "Clientes lembrados no momento certo por SMS automaticos — menos falhas, mais presença." },
+  { icon: Users,     title: "Gestão de Clientes",      desc: "Histórico completo, preferências e controlo total num único sistema." },
 ];
 
 const plans = [
   { name: "Básico",       price: "599",   desc: "Perfeito para começar",        features: ["Até 50 agendamentos/mês","1 funcionário","Página de reserva pública","Suporte por email"], highlight: false },
-  { name: "Profissional", price: "1.299", desc: "Para negócios em crescimento", features: ["Agendamentos ilimitados","Até 5 funcionários","Lembretes por SMS","Relatórios mensais","Suporte prioritário"], highlight: true },
-  { name: "Empresarial",  price: "2.499", desc: "Para múltiplas unidades",      features: ["Tudo no Profissional","Funcionários ilimitados","Múltiplas filiais","API de integração","Gestor de conta dedicado"], highlight: false },
+  { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", features: ["Agendamentos ilimitados","Até 5 funcionários","Lembretes por SMS","Relatórios mensais","Suporte prioritário"], highlight: true },
+  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      features: ["Tudo no Profissional","Funcionários ilimitados","Múltiplas filiais","API de integração","Gestor de conta dedicado"], highlight: false },
 ];
 
 const testimonials = [
-  { name: "Dra. Fátima Muiane",  role: "Clínica Saúde Plena, Maputo", text: "Reduzi as faltas em 60% no primeiro mês. Os meus pacientes adoram poder marcar consultas pelo telemóvel.", rating: 5 },
-  { name: "Carlos Nhantumbo",    role: "Salão Bela Forma, Matola",    text: "Antes perdia horas ao telefone a marcar horários. Agora foco no que sei fazer: trabalhar com os clientes.", rating: 5 },
-  { name: "Dra. Amélia Sitoe",   role: "Clínica Vida, Beira",         text: "Sistema simples e em português. A equipa do AgendaMoz ajudou na configuração toda. Recomendo muito.", rating: 5 },
+  { name: "Dra. Fátima Muiane",  role: "Clínica Saúde Plena, Maputo", text: "Antes atendia em média 13 consultas por semana. Hoje atendo 18, com menos falhas e uma agenda muito mais organizada.", rating: 4.7 },
+  { name: "Carlos Nhantumbo",    role: "Salão Bela Forma, Matola",    text: "Antes perdia horas ao telefone. Hoje os clientes marcam sozinhos e eu foco no atendimento.", rating: 4.9 },
+  { name: "Dra. Amélia Sitoe",   role: "Clínica Vida, Beira",         text: "Sistema simples, rápido de implementar e com suporte eficiente. Em poucos dias já estava a usar tudo.", rating: 5 },
 ];
 
 function useScrollReveal() {
@@ -95,12 +95,11 @@ export default function LandingPage() {
         <div className="relative max-w-6xl mx-auto">
           <div className="max-w-3xl">
             <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 leading-[1.05] mb-6 animate-fade-up">
-              Menos filas.{" "}
-              <span className="text-purple-600">Mais clientes.</span>{" "}
-              Melhor negócio.
+              Cada horário preenchido,{" "}
+              <span className="text-purple-600">é dinheiro no caixa.</span>{" "}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-xl leading-relaxed animate-fade-up anim-delay-100">
-              Plataforma de agendamento para clínicas e salões em Moçambique. Os seus clientes marcam online — você foca no atendimento.
+              Plataforma de agendamento para clínicas e salões. Clientes marcam online e recebem lembretes automáticos por SMS, você mantém total controlo da agenda e transforma cada horário em faturamento.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up anim-delay-200">
               <Link href="/register" className="btn-primary flex items-center justify-center gap-2 text-base group">
@@ -108,14 +107,14 @@ export default function LandingPage() {
               </Link>
               <Link href="/book/demo" className="btn-outline flex items-center justify-center gap-2 text-base">Ver demonstração</Link>
             </div>
-            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Sem cartão de crédito &nbsp; ✓ Suporte em português</p>
+            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Pagamentos via M-Pesa &nbsp; ✓ 3 dias grátis</p>
           </div>
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
             {[
               { icon: Users,    label: "Clientes activos",   value: "1.200+" },
-              { icon: Calendar, label: "Agendamentos feitos", value: "48.000+" },
-              { icon: Star,     label: "Avaliação média",     value: "4.9 / 5" },
+              { icon: Calendar, label: "Agendamentos realizados", value: "48.000+" },
+              { icon: Star,     label: "Avaliação média",     value: "4.8" },
             ].map(({ icon: Icon, label, value }, i) => (
               <div key={label} className="card flex items-center gap-4 animate-fade-up" style={{animationDelay:`${400+i*100}ms`,opacity:0,animationFillMode:"forwards"}}>
                 <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -137,7 +136,7 @@ export default function LandingPage() {
           <Reveal className="text-center mb-16">
             <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Transformação real</p>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Antes vs Depois</h2>
-            <p className="text-gray-500 text-lg">Veja o impacto real nas clínicas e salões que usam o AgendaMoz</p>
+            <p className="text-gray-500 text-lg">Veja o impacto nas clínicas e salões que usam o AgendaMoz</p>
           </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -191,7 +190,7 @@ export default function LandingPage() {
                     { label: "Taxa de faltas",           value: "5 – 8%",             badge: "-75%" },
                     { label: "Horas ao telefone/dia",   value: "30 minutos",          badge: "-85%" },
                     { label: "Agendamentos perdidos",   value: "0 – 2/mês",           badge: "-90%" },
-                    { label: "Satisfação do cliente",   value: "4.9 / 5",             badge: "+40%" },
+                    { label: "Satisfação do cliente",   value: "4.8 / 5",             badge: "+40%" },
                   ].map(({ label, value, badge }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-white/20 last:border-0">
                       <p className="text-purple-100 text-sm">{label}</p>
@@ -239,8 +238,8 @@ export default function LandingPage() {
       <section id="funcionalidades" className="py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
-            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Funcionalidades</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Tudo o que precisa, nada do que não precisa</h2>
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Como funciona</p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Tudo o que precisa para organizar, controlar e crescer</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {features.map(({ icon: Icon, title, desc }) => (
@@ -264,9 +263,8 @@ export default function LandingPage() {
       <section id="precos" className="py-24 px-4 sm:px-6 bg-gray-50">
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
-            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Preços</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Simples e transparente</h2>
-            <p className="text-gray-600 mt-3">Preços em Meticais. Sem surpresas.</p>
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Planos</p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Simples, claros e feitos para escalar consigo</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {plans.map((plan) => (
@@ -309,7 +307,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
             <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Testemunhos</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Empresas moçambicanas que confiam em nós</h2>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Resultados reais, não promessas</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {testimonials.map((t) => (
@@ -335,9 +333,9 @@ export default function LandingPage() {
         <Reveal>
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">Pronto para transformar o seu negócio?</h2>
-            <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 1.200 profissionais que já usam o AgendaMoz.</p>
+            <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 1.200 profissionais que já transformaram a sua agenda num sistema previsível de crescimento.</p>
             <Link href="/register" className="bg-white text-purple-700 px-10 py-4 rounded-xl font-bold text-base inline-flex items-center gap-2 hover:bg-purple-50 transition-colors group">
-              Começar gratuitamente — 14 dias grátis
+              Começar gratuitamente — 3 dias grátis
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
@@ -352,13 +350,13 @@ export default function LandingPage() {
               <img src="/amlogo.svg" alt="AgendaMoz" className="h-24 w-auto" />
               <span className="font-display text-white text-lg font-bold">AgendaMoz</span>
             </div>
-            <p className="text-sm max-w-xs">Agendamentos simples para clínicas e salões em Moçambique.</p>
+            <p className="text-sm max-w-xs">A forma mais simples de organizar, profissionalizar e escalar o seu negócio em Moçambique.</p>
           </div>
           <div className="flex gap-12 text-sm">
             <div className="flex flex-col gap-2">
               <p className="text-white font-semibold mb-1">Produto</p>
-              <a href="#funcionalidades" className="hover:text-purple-400 transition-colors">Funcionalidades</a>
-              <a href="#precos"          className="hover:text-purple-400 transition-colors">Preços</a>
+              <a href="#funcionalidades" className="hover:text-purple-400 transition-colors">Como funciona</a>
+              <a href="#precos"          className="hover:text-purple-400 transition-colors">Planos</a>
               <Link href="/register"     className="hover:text-purple-400 transition-colors">Registar</Link>
             </div>
             <div className="flex flex-col gap-2">
@@ -369,7 +367,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto mt-10 pt-6 border-t border-gray-800 text-xs text-center">
-          © {new Date().getFullYear()} AgendaMoz. Feito em Moçambique 🇲🇿
+          © {new Date().getFullYear()} AgendaMoz. Todos os direitos reservados.
         </div>
       </footer>
     </div>
