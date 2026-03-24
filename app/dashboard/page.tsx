@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { Calendar, TrendingUp, Users, CheckCircle, ChevronRight, Phone } from "lucide-react";
+import { Calendar, TrendingUp, Users, CheckCircle, ChevronRight, Phone, X } from "lucide-react";
 import { supabase, type Appointment, type Service } from "@/lib/supabase";
 import { useBusinessId } from "@/lib/useBusinessId";
 import { format, isToday, isTomorrow, parseISO, startOfMonth, subMonths } from "date-fns";
