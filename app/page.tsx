@@ -12,9 +12,9 @@ const features = [
 ];
 
 const plans = [
-  { name: "Básico",       price: "599",   desc: "Perfeito para começar",        features: ["Até 50 agendamentos/mês","1 funcionário","Página de reserva pública","Suporte por email"], highlight: false },
-  { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", features: ["Agendamentos ilimitados","Até 5 funcionários","Lembretes por SMS","Relatórios mensais","Suporte prioritário"], highlight: true },
-  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      features: ["Tudo no Profissional","Funcionários ilimitados","Múltiplas filiais","API de integração","Gestor de conta dedicado"], highlight: false },
+  { name: "Básico",       price: "599",   desc: "Perfeito para começar",        features: ["Até 50 agendamentos/mês","1 membro de equipa","Página de reserva pública","Suporte por email"], highlight: false },
+  { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", features: ["Agendamentos ilimitados","Até 5 membros de equipa","SMS automático para clientes","Relatórios + exportação Excel","Suporte prioritário Via Whatsapp"], highlight: true },
+  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      features: ["Tudo no Profissional","Membros de equipa ilimitados","Histórico ilimitado","API de integração","Personalização da página pública","Suporte com resposta em menos de 2 horas"], highlight: false },
 ];
 
 const testimonials = [
