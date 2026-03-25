@@ -99,12 +99,12 @@ export default function LandingPage() {
               <span className="text-purple-600">é dinheiro no caixa.</span>{" "}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 mb-10 max-w-xl leading-relaxed animate-fade-up anim-delay-100">
-              Plataforma de agendamento para clínicas e salões. Clientes marcam online e recebem lembretes automáticos por SMS, você mantém total controlo da agenda e transforma cada horário em faturamento.
+              Plataforma de agendamento para clínicas e salões. Clientes marcam online e recebem lembretes automáticos por SMS.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up anim-delay-200">
               <Link href="/register" className="btn-primary flex items-center justify-center gap-2 text-base group">
                 Começar gratuitamente <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+                </Link>
               <Link href="/book/demo" className="btn-outline flex items-center justify-center gap-2 text-base">Ver demonstração</Link>
             </div>
             <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Pagamentos via M-Pesa &nbsp; ✓ 3 dias grátis</p>
@@ -112,8 +112,8 @@ export default function LandingPage() {
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
             {[
-              { icon: Users,    label: "Clientes activos",   value: "1.200+" },
-              { icon: Calendar, label: "Agendamentos realizados", value: "48.000+" },
+              { icon: Users,    label: "Negócios activos",   value: "800+" },
+              { icon: Calendar, label: "Agendamentos realizados", value: "44.000+" },
               { icon: Star,     label: "Avaliação média",     value: "4.8" },
             ].map(({ icon: Icon, label, value }, i) => (
               <div key={label} className="card flex items-center gap-4 animate-fade-up" style={{animationDelay:`${400+i*100}ms`,opacity:0,animationFillMode:"forwards"}}>

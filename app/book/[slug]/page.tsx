@@ -34,6 +34,7 @@ export default function BookingPage() {
   const [clientPhone, setClientPhone] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [limitReached, setLimitReached] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -166,7 +167,6 @@ export default function BookingPage() {
   );
 
   const isInactive = !business?.is_active;
-  const [limitReached, setLimitReached] = useState(false);
 
   if (limitReached) return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center text-center px-4">
