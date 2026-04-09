@@ -59,6 +59,13 @@
   }
 }
 
+/* Numeric font — Inter with tabular lining figures */
+.font-nums {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
 .anim-delay-100 { animation-delay: 100ms; }
 .anim-delay-200 { animation-delay: 200ms; }
 .anim-delay-300 { animation-delay: 300ms; }

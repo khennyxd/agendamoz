@@ -32,6 +32,7 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-raleway)", "var(--font-poppins)", "system-ui", "sans-serif"],
         body:    ["var(--font-inter)", "system-ui", "sans-serif"],
+        nums:    ["var(--font-inter)", "system-ui", "sans-serif"],
       },
       animation: {
         "fade-up":  "fadeUp 0.5s ease forwards",
