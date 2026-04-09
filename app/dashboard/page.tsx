@@ -21,18 +21,17 @@ function StatusBadge({ status }: { status: Appointment["status"] }) {
   return <span className={cls}>{label}</span>;
 }
 
-// Simple bar chart component
 function MiniBarChart({ data }: { data: { label: string; value: number }[] }) {
   const max = Math.max(...data.map(d => d.value), 1);
   return (
-    <div className="flex items-end gap-1.5 h-16">
+    <div className="flex items-end gap-1 h-14">
       {data.map((d, i) => (
-        <div key={i} className="flex-1 flex flex-col items-center gap-1">
+        <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
           <div
-            className="w-full bg-purple-200 rounded-t-sm transition-all duration-500"
-            style={{ height: `${Math.max((d.value / max) * 52, 4)}px`, backgroundColor: i === data.length - 1 ? '#7c3aed' : '#ddd6fe' }}
+            className="w-full rounded-t-sm transition-all duration-500"
+            style={{ height: `${Math.max((d.value / max) * 44, 4)}px`, backgroundColor: i === data.length - 1 ? '#7c3aed' : '#ddd6fe' }}
           />
-          <span className="text-[9px] text-gray-400 truncate w-full text-center">{d.label}</span>
+          <span className="text-[8px] text-gray-400 truncate w-full text-center">{d.label}</span>
         </div>
       ))}
     </div>
@@ -48,7 +47,6 @@ export default function DashboardPage() {
   const [serviceFilter, setServiceFilter] = useState("all");
   const [isFiltering, setIsFiltering] = useState(false);
 
-  // Revenue goal
   const [goal, setGoal] = useState<number>(0);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [goalInput, setGoalInput] = useState("");
@@ -65,10 +63,6 @@ export default function DashboardPage() {
     setShowGoalModal(false);
     setGoalInput("");
   }
-
-
-
-
 
   useEffect(() => {
     async function load() {
@@ -91,7 +85,6 @@ export default function DashboardPage() {
     setTimeout(() => setIsFiltering(false), 600);
   }
 
-  // Filter appointments
   const filtered = appointments.filter((a) => {
     const now = new Date();
     const thisMonth = format(startOfMonth(now), "yyyy-MM-dd");
@@ -114,7 +107,6 @@ export default function DashboardPage() {
   const completed = filtered.filter(a => a.status === "completed").length;
   const pending = filtered.filter(a => a.status === "pending").length;
 
-  // Chart data — last 6 months
   const chartData = Array.from({ length: 6 }, (_, i) => {
     const d = subMonths(new Date(), 5 - i);
     const monthKey = format(d, "yyyy-MM");
@@ -124,12 +116,9 @@ export default function DashboardPage() {
     return { label: format(d, "MMM", { locale: pt }), value: val };
   });
 
-  // Next 3 pending appointments
   const upcoming = appointments
     .filter(a => a.date >= today && a.status === "pending")
     .slice(0, 3);
-
-
 
   if (loading || bizLoading) return (
     <div className="flex items-center justify-center h-64">
@@ -140,24 +129,20 @@ export default function DashboardPage() {
   return (
     <div className={`max-w-6xl mx-auto transition-all duration-300 ${isFiltering ? "opacity-40 blur-sm" : "opacity-100 blur-none"}`}>
 
-
-
-      {/* Filters */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex gap-2">
-          <select
-            className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            value={period}
-            onChange={(e) => handleFilterChange(() => setPeriod(e.target.value as FilterPeriod))}
-          >
-            <option value="today">Hoje</option>
-            <option value="this_month">Este mês</option>
-            <option value="last_month">Mês passado</option>
-            <option value="all">Todo o período</option>
-          </select>
-        </div>
+      {/* Filters — stack on mobile */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-5">
         <select
-          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full sm:w-auto"
+          value={period}
+          onChange={(e) => handleFilterChange(() => setPeriod(e.target.value as FilterPeriod))}
+        >
+          <option value="today">Hoje</option>
+          <option value="this_month">Este mês</option>
+          <option value="last_month">Mês passado</option>
+          <option value="all">Todo o período</option>
+        </select>
+        <select
+          className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full sm:w-auto"
           value={serviceFilter}
           onChange={(e) => handleFilterChange(() => setServiceFilter(e.target.value))}
         >
@@ -166,38 +151,34 @@ export default function DashboardPage() {
         </select>
       </div>
 
-      {/* Stats + Chart row */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
-        {/* Stat cards */}
+      {/* Stats — 2 cols on mobile, 4+chart on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
         {[
-          { label: "FATURAMENTO TOTAL",       value: `MZN ${revenue.toLocaleString("pt-MZ")}`, icon: TrendingUp },
-          { label: "TOTAL DE AGENDAMENTOS",   value: totalAppts, icon: Calendar },
-          { label: "CONCLUÍDOS",              value: completed,  icon: CheckCircle },
-          { label: "PENDENTES",               value: pending,    icon: Users },
+          { label: "Faturamento", value: `MZN ${revenue.toLocaleString("pt-MZ")}`, icon: TrendingUp },
+          { label: "Agendamentos", value: totalAppts, icon: Calendar },
+          { label: "Concluídos",   value: completed,  icon: CheckCircle },
+          { label: "Pendentes",    value: pending,    icon: Users },
         ].map(({ label, value, icon: Icon }) => (
-          <div
-            key={label}
-            className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default"
-          >
+          <div key={label} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider leading-tight">{label}</p>
               <Icon className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
             </div>
-            <p className="font-display text-xl font-bold text-gray-900">{value}</p>
+            <p className="font-display text-xl font-bold text-gray-900 truncate">{value}</p>
           </div>
         ))}
 
-        {/* Mini chart */}
-        <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-default">
-          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">ÚLTIMOS 6 MESES</p>
+        {/* Mini chart — full width on mobile, 1 col on lg */}
+        <div className="col-span-2 lg:col-span-1 bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+          <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Últimos 6 meses</p>
           <MiniBarChart data={chartData} />
         </div>
       </div>
 
       {/* Upcoming appointments */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm mb-4">
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
-          <h2 className="font-display text-sm font-bold text-gray-900">Próximos agendamentos pendentes</h2>
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-b border-gray-100">
+          <h2 className="font-display text-sm font-bold text-gray-900">Próximos pendentes</h2>
           <Link href="/dashboard/appointments" className="text-xs text-purple-600 hover:text-purple-700 font-semibold flex items-center gap-1">
             Ver todos <ChevronRight className="w-3.5 h-3.5" />
           </Link>
@@ -214,16 +195,16 @@ export default function DashboardPage() {
               const apptDate = parseISO(appt.date);
               const dateLabel = isToday(apptDate) ? "Hoje" : isTomorrow(apptDate) ? "Amanhã" : format(apptDate, "d MMM", { locale: pt });
               return (
-                <div key={appt.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50 transition-colors">
-                  <div className="w-12 h-12 bg-purple-50 border border-purple-100 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
-                    <p className="text-purple-700 font-bold text-[11px] leading-none">{dateLabel}</p>
-                    <p className="text-purple-400 text-[11px] mt-0.5">{appt.time.slice(0, 5)}</p>
+                <div key={appt.id} className="flex items-center gap-3 px-4 sm:px-5 py-3 hover:bg-gray-50 transition-colors">
+                  <div className="w-11 h-11 bg-purple-50 border border-purple-100 rounded-xl flex flex-col items-center justify-center flex-shrink-0">
+                    <p className="text-purple-700 font-bold text-[10px] leading-none">{dateLabel}</p>
+                    <p className="text-purple-400 text-[10px] mt-0.5">{appt.time.slice(0, 5)}</p>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 text-sm truncate">{appt.client_name}</p>
                     <p className="text-gray-400 text-xs truncate">{(appt as any).service?.name || "Serviço"}</p>
                   </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center gap-1 sm:gap-3 flex-shrink-0">
                     <p className="text-gray-400 text-xs hidden sm:flex items-center gap-1">
                       <Phone className="w-3 h-3" />{appt.client_phone}
                     </p>
@@ -238,7 +219,7 @@ export default function DashboardPage() {
 
       {/* Booking link */}
       {business && (
-        <div className="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3 flex items-center justify-between gap-4">
+        <div className="bg-purple-50 border border-purple-100 rounded-xl px-4 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-semibold text-purple-700 mb-0.5">Link de agendamento</p>
             <p className="text-xs text-purple-400 truncate">agendamoz.vercel.app/book/{business.slug}</p>
@@ -247,7 +228,7 @@ export default function DashboardPage() {
             onClick={() => navigator.clipboard.writeText(`${window.location.origin}/book/${business.slug}`)}
             className="text-xs font-bold text-purple-600 hover:text-purple-700 flex-shrink-0 bg-white border border-purple-200 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
           >
-            Copiar link
+            Copiar
           </button>
         </div>
       )}
@@ -264,17 +245,8 @@ export default function DashboardPage() {
               </button>
             </div>
             <p className="text-gray-500 text-sm mb-4">Define uma meta mensal para acompanhar o teu progresso</p>
-            <input
-              className="input mb-4"
-              placeholder="Ex: 50000"
-              value={goalInput}
-              onChange={(e) => setGoalInput(e.target.value)}
-              type="number"
-              min="0"
-            />
-            {goalInput && (
-              <p className="text-xs text-gray-500 mb-4">= MZN {Number(goalInput).toLocaleString("pt-MZ")}</p>
-            )}
+            <input className="input mb-4" placeholder="Ex: 50000" value={goalInput} onChange={(e) => setGoalInput(e.target.value)} type="number" min="0" />
+            {goalInput && <p className="text-xs text-gray-500 mb-4">= MZN {Number(goalInput).toLocaleString("pt-MZ")}</p>}
             <div className="flex gap-3">
               <button onClick={saveGoal} className="btn-primary flex-1 justify-center text-sm py-2.5">Guardar meta</button>
               {goal > 0 && (

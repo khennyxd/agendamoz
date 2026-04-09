@@ -339,9 +339,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Menu className="w-5 h-5" />
             </button>
             {business && (
-              <div className="hidden md:block">
-                <p className="text-sm font-bold text-gray-900 leading-none">Equipa de {business.name}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{new Date().toLocaleDateString("pt-MZ", { weekday: "long", day: "numeric", month: "long" })}</p>
+              <div>
+                <p className="text-sm font-bold text-gray-900 leading-none truncate max-w-[160px] sm:max-w-none">
+                  {business.name}
+                </p>
+                <p className="text-xs text-gray-400 mt-0.5 hidden sm:block">
+                  {new Date().toLocaleDateString("pt-MZ", { weekday: "long", day: "numeric", month: "long" })}
+                </p>
               </div>
             )}
           </div>
@@ -412,7 +416,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="flex-1 p-3 sm:p-6">{children}</main>
       </div>
     </div>
   );

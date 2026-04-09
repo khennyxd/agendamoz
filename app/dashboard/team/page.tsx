@@ -163,16 +163,16 @@ export default function TeamPage() {
   // ── OWNER VIEW ──
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-3xl font-bold text-gray-900">Equipa</h1>
-          <p className="text-gray-500 text-sm mt-1">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">Equipa</h1>
+          <p className="text-gray-500 text-sm mt-0.5">
             {maxMembers === -1 ? "Membros ilimitados" : `${activeMembers} de ${maxMembers} membro${maxMembers > 1 ? "s" : ""} activo${maxMembers > 1 ? "s" : ""}`}
           </p>
         </div>
         {canInvite && !isPlanBlocked && (
           <button onClick={() => setShowModal(true)} className="btn-primary flex items-center gap-2 text-sm py-2.5">
-            <Plus className="w-4 h-4" /> Convidar membro
+            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Convidar membro</span><span className="sm:hidden">Convidar</span>
           </button>
         )}
       </div>

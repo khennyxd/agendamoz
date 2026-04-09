@@ -44,13 +44,13 @@ export default function ServicesPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl font-bold text-gray-900">Serviços</h1>
-          <p className="text-gray-500 text-sm mt-1">{services.length} serviço{services.length !== 1 ? "s" : ""} activo{services.length !== 1 ? "s" : ""}</p>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">Serviços</h1>
+          <p className="text-gray-500 text-sm mt-0.5">{services.length} serviço{services.length !== 1 ? "s" : ""} activo{services.length !== 1 ? "s" : ""}</p>
         </div>
         <button onClick={openCreate} className="btn-primary flex items-center gap-2 text-sm py-2.5">
-          <Plus className="w-4 h-4" /> Novo serviço
+          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Novo serviço</span><span className="sm:hidden">Novo</span>
         </button>
       </div>
 
@@ -91,9 +91,9 @@ export default function ServicesPage() {
       )}
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <div className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-md p-6 max-h-[92vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-display text-lg font-bold text-gray-900">{editing ? "Editar serviço" : "Novo serviço"}</h2>
               <button onClick={() => setShowModal(false)} className="p-2 hover:bg-gray-100 rounded-xl text-gray-500"><X className="w-4 h-4" /></button>

@@ -151,9 +151,9 @@ export default function SettingsPage() {
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
           <h2 className="font-display text-base font-bold text-gray-900 mb-2">Link da página pública</h2>
           <p className="text-gray-500 text-sm mb-4">Link que os seus clientes usam para fazer reservas</p>
-          <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden mb-3">
-            <span className="bg-gray-50 px-3 py-3 text-gray-400 text-sm border-r border-gray-200 flex-shrink-0">agendamoz.vercel.app/book/</span>
-            <input className="flex-1 px-3 py-3 text-sm focus:outline-none text-gray-900 bg-white" value={form.slug}
+          <div className="flex flex-col sm:flex-row items-stretch border border-gray-200 rounded-xl overflow-hidden mb-3">
+            <span className="bg-gray-50 px-3 py-3 text-gray-400 text-xs sm:text-sm border-b sm:border-b-0 sm:border-r border-gray-200 flex-shrink-0">agendamoz.vercel.app/book/</span>
+            <input className="flex-1 px-3 py-3 text-sm focus:outline-none text-gray-900 bg-white min-w-0" value={form.slug}
               onChange={(e) => setForm(p => ({ ...p, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40) }))} />
           </div>
           <a href={`/book/${form.slug}`} target="_blank" className="flex items-center gap-1 text-sm text-purple-600 hover:text-purple-700 transition-colors">
