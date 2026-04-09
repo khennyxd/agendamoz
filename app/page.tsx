@@ -5,10 +5,10 @@ import { useState, useEffect, useRef } from "react";
 import { Calendar, Clock, Users, Star, ChevronRight, CheckCircle, Menu, X, Stethoscope, Scissors, PhoneCall } from "lucide-react";
 
 const features = [
-  { icon: Calendar,  title: "Agenda Online 24/7",      desc: "Receba marcações a qualquer hora, sem chamadas nem interrupções.." },
+  { icon: Calendar,  title: "Agenda Online 24/7",      desc: "Receba marcações a qualquer hora, sem chamadas nem interrupções." },
   { icon: Clock,     title: "Sem Filas de Espera",     desc: "Atendimento organizado, horários definidos e clientes mais satisfeitos." },
-  { icon: PhoneCall, title: "Lembretes Automáticos",   desc: "Clientes lembrados no momento certo por SMS automaticos — menos falhas, mais presença." },
-  { icon: Users,     title: "Gestão de Clientes",      desc: "Histórico completo, preferências e controlo total num único sistema." },
+  { icon: PhoneCall, title: "Lembretes Automáticos",   desc: "SMS enviadas em momentos estratégicos: após a marcação, às 15h do dia anterior e 2 horas antes da consulta." },
+  { icon: Users,     title: "Gestão de Clientes",      desc: "Relatórios, histórico de visitas, preferências e controlo total — num único sistema." },
 ];
 
 const plans = [
@@ -69,7 +69,7 @@ export default function LandingPage() {
               </a>
             ))}
             <Link href="/login"    className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium">Entrar</Link>
-            <Link href="/register" className="btn-primary text-sm py-2 px-5">Começar Grátis</Link>
+            <Link href="/register" className="btn-primary text-sm py-2 px-5">Começar — 7 dias grátis</Link>
           </div>
           <button className="md:hidden p-2 text-gray-600" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="w-5 h-5"/> : <Menu className="w-5 h-5"/>}
@@ -81,7 +81,7 @@ export default function LandingPage() {
             <a href="#precos"          className="text-gray-700 font-medium" onClick={() => setMenuOpen(false)}>Preços</a>
             <a href="#testemunhos"     className="text-gray-700 font-medium" onClick={() => setMenuOpen(false)}>Testemunhos</a>
             <Link href="/login"    className="text-gray-700 font-medium">Entrar</Link>
-            <Link href="/register" className="btn-primary text-center">Começar Grátis</Link>
+            <Link href="/register" className="btn-primary text-center">Começar — 7 dias grátis</Link>
           </div>
         )}
       </nav>
@@ -103,11 +103,11 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up anim-delay-200">
               <Link href="/register" className="btn-primary flex items-center justify-center gap-2 text-base group">
-                Começar gratuitamente <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                Começar — 7 dias grátis <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
-              <Link href="/book/demo" className="btn-outline flex items-center justify-center gap-2 text-base">Ver demonstração</Link>
+              <a href="#funcionalidades" className="btn-outline flex items-center justify-center gap-2 text-base">Como funciona</a>
             </div>
-            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Pagamentos via M-Pesa &nbsp; ✓ 3 dias grátis</p>
+            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Pagamentos via M-Pesa &nbsp; ✓ 7 dias grátis — já dentro do sistema</p>
           </div>
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
@@ -154,11 +154,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   {[
-                    { label: "Tempo de resposta",       value: "30 min – 4 horas" },
-                    { label: "Taxa de faltas",           value: "20 – 40%" },
-                    { label: "Horas ao telefone/dia",   value: "3 – 4 horas" },
-                    { label: "Agendamentos perdidos",   value: "15 – 20/mês" },
-                    { label: "Satisfação do cliente",   value: "3.5 / 5" },
+                    { label: "Tempo de resposta",            value: "Em média, 3 horas" },
+                    { label: "Clientes que não aparecem",     value: "20 em cada 100" },
+                    { label: "Horas ao telefone/dia",         value: "3 a 4 horas" },
+                    { label: "Agendamentos perdidos",         value: "15 a 20 por mês" },
+                    { label: "Satisfação do cliente",         value: "3.5 / 5" },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
                       <p className="text-gray-600 text-sm">{label}</p>
@@ -186,11 +186,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   {[
-                    { label: "Tempo de resposta",       value: "Instantâneo (24/7)", badge: "-99%" },
-                    { label: "Taxa de faltas",           value: "5 – 8%",             badge: "-75%" },
-                    { label: "Horas ao telefone/dia",   value: "30 minutos",          badge: "-85%" },
-                    { label: "Agendamentos perdidos",   value: "0 – 2/mês",           badge: "-90%" },
-                    { label: "Satisfação do cliente",   value: "4.8 / 5",             badge: "+40%" },
+                    { label: "Tempo de resposta",           value: "Instantâneo (24/7)", badge: "-99%" },
+                    { label: "Clientes que não aparecem",    value: "Em média, 5 em 100",  badge: "-75%" },
+                    { label: "Horas ao telefone/dia",        value: "30 minutos",          badge: "-85%" },
+                    { label: "Agendamentos perdidos",        value: "0 a 2 por mês",       badge: "-90%" },
+                    { label: "Satisfação do cliente",        value: "4.8 / 5",             badge: "+40%" },
                   ].map(({ label, value, badge }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-white/20 last:border-0">
                       <p className="text-purple-100 text-sm">{label}</p>
@@ -219,7 +219,6 @@ export default function LandingPage() {
               {[
                 { icon: Stethoscope, label: "Clínicas & Consultórios", desc: "Médicos, dentistas, fisioterapeutas" },
                 { icon: Scissors,    label: "Salões & Spas",            desc: "Cabeleireiros, manicures, massagens" },
-                { icon: Users,       label: "Outros Serviços",          desc: "Fotógrafos, consultores, advogados" },
               ].map(({ icon: Icon, label, desc }) => (
                 <div key={label} className="flex flex-col items-center gap-3 group cursor-default">
                   <div className="w-14 h-14 bg-white border border-purple-200 rounded-2xl flex items-center justify-center group-hover:bg-purple-600 group-hover:border-purple-600 group-hover:scale-110 transition-all duration-300 shadow-sm">
@@ -293,7 +292,7 @@ export default function LandingPage() {
                       ? "bg-white text-purple-700 hover:bg-purple-50"
                       : "bg-purple-600 text-white hover:bg-purple-700"
                   }`}>
-                    Começar agora
+                    Começar — 7 dias grátis
                   </Link>
                 </div>
               </Reveal>
@@ -306,7 +305,7 @@ export default function LandingPage() {
       <section id="testemunhos" className="py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
-            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Testemunhos</p>
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Clientes reais</p>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Resultados reais, não promessas</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -335,7 +334,7 @@ export default function LandingPage() {
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">Pronto para transformar o seu negócio?</h2>
             <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 1.200 profissionais que já transformaram a sua agenda num sistema previsível de crescimento.</p>
             <Link href="/register" className="bg-white text-purple-700 px-10 py-4 rounded-xl font-bold text-base inline-flex items-center gap-2 hover:bg-purple-50 transition-colors group">
-              Começar gratuitamente — 3 dias grátis
+              Começar agora — 7 dias grátis
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

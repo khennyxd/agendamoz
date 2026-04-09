@@ -151,13 +151,13 @@ export default function BookingPage() {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   if (loading) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-teal-800 border-t-transparent rounded-full animate-spin" />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
   if (notFound) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center text-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center text-center px-4">
       <div>
         <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
         <h1 className="font-display text-2xl font-bold mb-2">Negócio não encontrado</h1>
@@ -197,7 +197,7 @@ export default function BookingPage() {
   );
 
   if (step === "done") return (
-    <div className="min-h-screen bg-cream flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="text-center max-w-sm">
         <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-green-600" />
@@ -218,23 +218,23 @@ export default function BookingPage() {
   );
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-gray-50">
       {/* Business header */}
-      <div className="bg-teal-800 text-white px-4 py-8">
+      <div className="bg-purple-700 text-white px-4 py-8">
         <div className="max-w-lg mx-auto">
-          <div className="w-12 h-12 bg-teal-700 rounded-2xl flex items-center justify-center mb-4">
+          <div className="w-12 h-12 bg-purple-700 rounded-2xl flex items-center justify-center mb-4">
             <Calendar className="w-6 h-6 text-amber-400" />
           </div>
           <h1 className="font-display text-2xl font-bold">{business?.name}</h1>
-          {business?.description && <p className="text-teal-300 text-sm mt-1">{business.description}</p>}
+          {business?.description && <p className="text-purple-300 text-sm mt-1">{business.description}</p>}
           <div className="flex flex-wrap gap-4 mt-3">
             {business?.phone && (
-              <span className="flex items-center gap-1.5 text-teal-300 text-sm">
+              <span className="flex items-center gap-1.5 text-purple-300 text-sm">
                 <Phone className="w-3.5 h-3.5" />{business.phone}
               </span>
             )}
             {business?.address && (
-              <span className="flex items-center gap-1.5 text-teal-300 text-sm">
+              <span className="flex items-center gap-1.5 text-purple-300 text-sm">
                 <MapPin className="w-3.5 h-3.5" />{business.address}
               </span>
             )}
@@ -254,11 +254,11 @@ export default function BookingPage() {
             const active = current === idx;
             return (
               <div key={s} className="flex items-center gap-2 flex-1">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${done ? "bg-teal-800 text-white" : active ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-400"}`}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${done ? "bg-purple-700 text-white" : active ? "bg-amber-500 text-white" : "bg-gray-200 text-gray-400"}`}>
                   {done ? "✓" : i + 1}
                 </div>
                 <span className={`text-xs hidden sm:block ${active ? "font-semibold text-gray-800" : "text-gray-400"}`}>{labels[i]}</span>
-                {i < 2 && <div className={`flex-1 h-0.5 ${done ? "bg-teal-800" : "bg-gray-200"}`} />}
+                {i < 2 && <div className={`flex-1 h-0.5 ${done ? "bg-purple-700" : "bg-gray-200"}`} />}
               </div>
             );
           })}
@@ -281,7 +281,7 @@ export default function BookingPage() {
                   <button
                     key={service.id}
                     onClick={() => { setSelectedService(service); setStep("datetime"); }}
-                    className={`card text-left hover:shadow-md hover:border-teal-300 transition-all border-2 ${selectedService?.id === service.id ? "border-teal-700" : "border-transparent"}`}
+                    className={`card text-left hover:shadow-md hover:border-purple-300 transition-all border-2 ${selectedService?.id === service.id ? "border-purple-700" : "border-transparent"}`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -294,7 +294,7 @@ export default function BookingPage() {
                         </div>
                       </div>
                       <div className="text-right ml-4 flex-shrink-0">
-                        <p className="font-display text-lg font-bold text-teal-800">{service.price_mzn.toLocaleString("pt-MZ")}</p>
+                        <p className="font-display text-lg font-bold text-purple-700">{service.price_mzn.toLocaleString("pt-MZ")}</p>
                         <p className="text-xs text-gray-400">MZN</p>
                       </div>
                     </div>
@@ -308,7 +308,7 @@ export default function BookingPage() {
         {/* STEP 2: Date & Time */}
         {step === "datetime" && (
           <div>
-            <button onClick={() => setStep("service")} className="flex items-center gap-1 text-sm text-teal-700 mb-6 hover:text-teal-800">
+            <button onClick={() => setStep("service")} className="flex items-center gap-1 text-sm text-purple-700 mb-6 hover:text-purple-700">
               <ChevronLeft className="w-4 h-4" /> Voltar
             </button>
             <h2 className="font-display text-2xl font-bold mb-6">Escolha a data e hora</h2>
@@ -340,7 +340,7 @@ export default function BookingPage() {
                     disabled={isPast}
                     onClick={() => { setSelectedDate(dateStr); setSelectedTime(""); loadBookedSlots(dateStr); }}
                     className={`flex flex-col items-center py-3 px-1 rounded-xl text-sm transition-all ${
-                      isSelected ? "bg-teal-800 text-white" :
+                      isSelected ? "bg-purple-700 text-white" :
                       isPast ? "opacity-30 cursor-not-allowed" :
                       "hover:bg-gray-100"
                     }`}
@@ -368,9 +368,9 @@ export default function BookingPage() {
                         onClick={() => setSelectedTime(time)}
                         title={isUnavailable ? "Horário indisponível" : ""}
                         className={`py-2.5 rounded-xl text-sm font-medium transition-all ${
-                          isSelected ? "bg-teal-800 text-white" :
+                          isSelected ? "bg-purple-700 text-white" :
                           isUnavailable ? "bg-gray-100 text-gray-300 cursor-not-allowed line-through" :
-                          "bg-white border border-gray-200 hover:border-teal-400 hover:text-teal-800"
+                          "bg-white border border-gray-200 hover:border-purple-400 hover:text-purple-700"
                         }`}
                       >
                         {time}
@@ -394,7 +394,7 @@ export default function BookingPage() {
         {/* STEP 3: Client info */}
         {step === "info" && (
           <div>
-            <button onClick={() => setStep("datetime")} className="flex items-center gap-1 text-sm text-teal-700 mb-6 hover:text-teal-800">
+            <button onClick={() => setStep("datetime")} className="flex items-center gap-1 text-sm text-purple-700 mb-6 hover:text-purple-700">
               <ChevronLeft className="w-4 h-4" /> Voltar
             </button>
             <h2 className="font-display text-2xl font-bold mb-6">Os seus dados</h2>
@@ -413,8 +413,8 @@ export default function BookingPage() {
               </div>
 
               {/* Summary */}
-              <div className="bg-teal-50 rounded-2xl p-4 text-sm space-y-2">
-                <p className="font-semibold text-teal-800 mb-3">Resumo da reserva</p>
+              <div className="bg-purple-50 rounded-2xl p-4 text-sm space-y-2">
+                <p className="font-semibold text-purple-700 mb-3">Resumo da reserva</p>
                 <p><span className="text-gray-500">Serviço:</span> <strong>{selectedService?.name}</strong></p>
                 <p><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "d MMMM yyyy", { locale: pt })}</strong></p>
                 <p><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
@@ -435,7 +435,7 @@ export default function BookingPage() {
 
       {/* Footer */}
       <div className="text-center pb-8 text-xs text-gray-400">
-        Powered by <a href="/" className="text-teal-600 hover:underline">AgendaMoz</a> 🇲🇿
+        Powered by <a href="/" className="text-purple-600 hover:underline">AgendaMoz</a> 🇲🇿
       </div>
     </div>
   );

@@ -90,7 +90,18 @@ export default function ReportsPage() {
       ];
 
       XLSX.utils.book_append_sheet(wb, ws, "Agendamentos");
-      XLSX.writeFile(wb, `relatorio-${business?.name}-${format(new Date(), "yyyy-MM")}.xlsx`);
+
+      // Use Blob + anchor for mobile compatibility
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `relatorio-${business?.name}-${format(new Date(), "yyyy-MM")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
     } catch (err) {
       console.error("Erro ao exportar:", err);
     }
