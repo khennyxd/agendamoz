@@ -159,7 +159,7 @@ export default function ReportsPage() {
             <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${color === "purple" ? "bg-purple-100" : color === "green" ? "bg-green-100" : color === "amber" ? "bg-amber-100" : "bg-red-100"}`}>
               <Icon className={`w-4 h-4 ${color === "purple" ? "text-purple-600" : color === "green" ? "text-green-600" : color === "amber" ? "text-amber-600" : "text-red-500"}`} />
             </div>
-            <p className="font-display text-xl font-bold text-gray-900 truncate">{value}</p>
+            <p className="font-mono text-xl font-bold text-gray-900 truncate tabular-nums">{value}</p>
             <p className="text-gray-500 text-xs mt-0.5">{label}</p>
           </div>
         ))}

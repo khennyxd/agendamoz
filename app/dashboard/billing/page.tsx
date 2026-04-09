@@ -122,7 +122,7 @@ export default function BillingPage() {
         <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-5 flex items-center gap-4 mb-8">
           <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
           <div>
-            <p className="font-semibold text-green-300">Conta activa — Plano {business.plan || "Profissional"}</p>
+            <p className="font-semibold text-green-800">Conta activa — Plano {business.plan || "Profissional"}</p>
             {business.subscription_ends_at && (
               <p className="text-green-400 text-sm">Renova em {format(parseISO(business.subscription_ends_at), "d MMMM yyyy", { locale: pt })}</p>
             )}
@@ -167,7 +167,7 @@ export default function BillingPage() {
                     MAIS POPULAR
                   </span>
                 )}
-                <p className="font-display text-2xl font-bold text-white mb-1">{plan.price} <span className="text-base font-normal text-slate-500">MZN/mês</span></p>
+                <p className="font-display text-2xl font-bold text-white mb-1">{plan.price} <span className="text-base font-normal text-slate-300">MZN/mês</span></p>
                 <p className="font-semibold mb-1">{plan.name}</p>
                 <p className="text-slate-500 text-xs mb-4">{plan.desc}</p>
                 <ul className="space-y-2">

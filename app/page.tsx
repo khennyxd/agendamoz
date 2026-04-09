@@ -12,9 +12,9 @@ const features = [
 ];
 
 const plans = [
-  { name: "Básico",       price: "599",   desc: "Perfeito para começar",        features: ["Até 50 agendamentos/mês","1 membro de equipa","Página de reserva pública","Suporte por email"], highlight: false },
-  { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", features: ["Agendamentos ilimitados","Até 5 membros de equipa","SMS automático para clientes","Relatórios + exportação Excel","Suporte prioritário Via Whatsapp"], highlight: true },
-  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      features: ["Tudo no Profissional","Membros de equipa ilimitados","Histórico ilimitado","API de integração","Personalização da página pública","Suporte com resposta em menos de 2 horas"], highlight: false },
+  { name: "Básico",       price: "599",   desc: "Perfeito para começar",        cta: "Começar",       features: ["Até 50 agendamentos/mês","1 membro de equipa","Página de reserva pública","Suporte por email"], highlight: false },
+  { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", cta: "7 dias grátis", features: ["Agendamentos ilimitados","Até 5 membros de equipa","SMS automático para clientes","Relatórios + exportação Excel","Suporte prioritário Via Whatsapp"], highlight: true },
+  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      cta: "7 dias grátis", features: ["Tudo no Profissional","Membros de equipa ilimitados","Histórico ilimitado","API de integração","Personalização da página pública","Suporte com resposta em menos de 2 horas"], highlight: false },
 ];
 
 const testimonials = [
@@ -69,7 +69,7 @@ export default function LandingPage() {
               </a>
             ))}
             <Link href="/login"    className="text-sm text-gray-600 hover:text-gray-900 transition-colors font-medium">Entrar</Link>
-            <Link href="/register" className="btn-primary text-sm py-2 px-5">Começar — 7 dias grátis</Link>
+            <Link href="/register" className="btn-primary text-sm py-2 px-5">7 dias grátis</Link>
           </div>
           <button className="md:hidden p-2 text-gray-600" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="w-5 h-5"/> : <Menu className="w-5 h-5"/>}
@@ -81,7 +81,7 @@ export default function LandingPage() {
             <a href="#precos"          className="text-gray-700 font-medium" onClick={() => setMenuOpen(false)}>Preços</a>
             <a href="#testemunhos"     className="text-gray-700 font-medium" onClick={() => setMenuOpen(false)}>Testemunhos</a>
             <Link href="/login"    className="text-gray-700 font-medium">Entrar</Link>
-            <Link href="/register" className="btn-primary text-center">Começar — 7 dias grátis</Link>
+            <Link href="/register" className="btn-primary text-center">7 dias grátis</Link>
           </div>
         )}
       </nav>
@@ -103,11 +103,11 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 animate-fade-up anim-delay-200">
               <Link href="/register" className="btn-primary flex items-center justify-center gap-2 text-base group">
-                Começar — 7 dias grátis <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                7 dias grátis <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               <a href="#funcionalidades" className="btn-outline flex items-center justify-center gap-2 text-base">Como funciona</a>
             </div>
-            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Pagamentos via M-Pesa &nbsp; ✓ 7 dias grátis — já dentro do sistema</p>
+            <p className="mt-4 text-sm text-gray-500 animate-fade-up anim-delay-300">✓ Sem comissões por agendamento &nbsp; ✓ 7 dias grátis</p>
           </div>
 
           <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
@@ -121,7 +121,7 @@ export default function LandingPage() {
                   <Icon className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <p className="font-display text-2xl font-bold text-purple-700">{value}</p>
+                  <p className="font-mono text-2xl font-bold text-purple-700 tabular-nums">{value}</p>
                   <p className="text-xs text-gray-500">{label}</p>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function LandingPage() {
       <section className="py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
-            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Transformação real</p>
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">O que muda de imediato</p>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">Antes vs Depois</h2>
             <p className="text-gray-500 text-lg">Veja o impacto nas clínicas e salões que usam o AgendaMoz</p>
           </Reveal>
@@ -157,7 +157,7 @@ export default function LandingPage() {
                     { label: "Tempo de resposta",            value: "Em média, 3 horas" },
                     { label: "Clientes que não aparecem",     value: "20 em cada 100" },
                     { label: "Horas ao telefone/dia",         value: "3 a 4 horas" },
-                    { label: "Agendamentos perdidos",         value: "15 a 20 por mês" },
+                    { label: "Agendamentos perdidos",         value: "Cerca de 18 por mês" },
                     { label: "Satisfação do cliente",         value: "3.5 / 5" },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
@@ -202,7 +202,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <div className="mt-6 bg-white/15 rounded-xl p-4">
-                  <p className="text-purple-100 text-sm leading-relaxed"><strong className="text-white">Resultado:</strong> Mais clientes, equipa focada no atendimento e faturamento a crescer mês a mês.</p>
+                  <p className="text-purple-100 text-sm leading-relaxed"><strong className="text-white">Resultado:</strong> Agenda preenchida de forma consistente, equipa focada no atendimento e faturamento mensal significativamente superior — com menos esforço operacional.</p>
                 </div>
               </div>
             </Reveal>
@@ -275,7 +275,7 @@ export default function LandingPage() {
                 }`}>
                   {plan.highlight && <span className="bg-white text-purple-700 text-xs font-bold px-3 py-1 rounded-full self-start mb-4">MAIS POPULAR</span>}
                   <p className={`text-sm mb-1 ${plan.highlight ? "text-purple-200" : "text-gray-500"}`}>{plan.name}</p>
-                  <p className={`font-display text-4xl font-bold mb-1 ${plan.highlight ? "text-white" : "text-gray-900"}`}>
+                  <p className={`font-mono text-4xl font-bold mb-1 tabular-nums ${plan.highlight ? "text-white" : "text-gray-900"}`}>
                     {plan.price} <span className={`text-lg font-normal ${plan.highlight ? "text-purple-200" : "text-gray-400"}`}>MZN/mês</span>
                   </p>
                   <p className={`text-sm mb-6 ${plan.highlight ? "text-purple-200" : "text-gray-500"}`}>{plan.desc}</p>
@@ -292,7 +292,7 @@ export default function LandingPage() {
                       ? "bg-white text-purple-700 hover:bg-purple-50"
                       : "bg-purple-600 text-white hover:bg-purple-700"
                   }`}>
-                    Começar — 7 dias grátis
+                    {plan.cta}
                   </Link>
                 </div>
               </Reveal>
@@ -305,8 +305,8 @@ export default function LandingPage() {
       <section id="testemunhos" className="py-24 px-4 sm:px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <Reveal className="text-center mb-16">
-            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Clientes reais</p>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Resultados reais, não promessas</h2>
+            <p className="text-purple-600 text-sm font-semibold uppercase tracking-widest mb-3">Quem já usa</p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-900">Números reais. Negócios reais. Sem filtros.</h2>
           </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {testimonials.map((t) => (
@@ -332,9 +332,9 @@ export default function LandingPage() {
         <Reveal>
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">Pronto para transformar o seu negócio?</h2>
-            <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 1.200 profissionais que já transformaram a sua agenda num sistema previsível de crescimento.</p>
+            <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 800 profissionais que já transformaram a sua agenda num sistema previsível de crescimento.</p>
             <Link href="/register" className="bg-white text-purple-700 px-10 py-4 rounded-xl font-bold text-base inline-flex items-center gap-2 hover:bg-purple-50 transition-colors group">
-              Começar agora — 7 dias grátis
+              7 dias grátis
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>

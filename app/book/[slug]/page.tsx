@@ -226,15 +226,15 @@ export default function BookingPage() {
             <Calendar className="w-6 h-6 text-amber-400" />
           </div>
           <h1 className="font-display text-2xl font-bold">{business?.name}</h1>
-          {business?.description && <p className="text-purple-300 text-sm mt-1">{business.description}</p>}
+          {business?.description && <p className="text-white/80 text-sm mt-1">{business.description}</p>}
           <div className="flex flex-wrap gap-4 mt-3">
             {business?.phone && (
-              <span className="flex items-center gap-1.5 text-purple-300 text-sm">
+              <span className="flex items-center gap-1.5 text-white text-sm">
                 <Phone className="w-3.5 h-3.5" />{business.phone}
               </span>
             )}
             {business?.address && (
-              <span className="flex items-center gap-1.5 text-purple-300 text-sm">
+              <span className="flex items-center gap-1.5 text-white text-sm">
                 <MapPin className="w-3.5 h-3.5" />{business.address}
               </span>
             )}

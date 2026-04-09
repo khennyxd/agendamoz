@@ -42,18 +42,18 @@ export default function FinancesPage() {
       </div>
 
       {/* Info banner */}
-      <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 mb-6 text-sm text-purple-900">
+      <div className="bg-purple-50 border border-purple-200 rounded-xl p-5 mb-6 text-sm text-purple-900 overflow-hidden">
         <div className="flex items-start gap-3">
-          <span className="text-xl flex-shrink-0">🔗</span>
-          <div>
-            <p className="font-bold text-purple-800 mb-1">Em breve: ligação às suas contas</p>
-            <p className="text-purple-700 leading-relaxed mb-3">
-              Esta secção vai permitir ligar as contas do seu negócio — M-Pesa, e-Mola, mKesh, transferência bancária — directamente ao AgendaMoz. Cada transacção ficará registada no sistema de forma automática e em tempo real.
+          <span className="text-xl flex-shrink-0 mt-0.5">🔗</span>
+          <div className="min-w-0 flex-1">
+            <p className="font-bold text-purple-800 mb-2">Em breve: ligação às suas contas</p>
+            <p className="text-purple-700 leading-relaxed mb-3 break-words">
+              Esta secção vai permitir ligar as contas do seu negócio — M-Pesa, e-Mola, mKesh, transferência bancária — directamente ao AgendaMoz. Cada transacção ficará registada automaticamente em tempo real.
             </p>
-            <div className="flex flex-col gap-1.5 text-purple-700">
-              <p className="flex items-start gap-2"><span className="text-green-600 font-bold flex-shrink-0">✓</span> O AgendaMoz só terá acesso de <strong>leitura</strong> — nunca poderá fazer transferências, movimentar ou tocar no seu dinheiro.</p>
-              <p className="flex items-start gap-2"><span className="text-green-600 font-bold flex-shrink-0">✓</span> Os seus dados são <strong>protegidos e nunca partilhados</strong> com terceiros.</p>
-              <p className="flex items-start gap-2"><span className="text-blue-500 font-bold flex-shrink-0">ℹ</span> Esta funcionalidade é <strong>completamente opcional</strong> — pode continuar a usar o AgendaMoz sem a activar.</p>
+            <div className="flex flex-col gap-2 text-purple-700">
+              <p className="flex items-start gap-2"><span className="text-green-600 font-bold flex-shrink-0 mt-0.5">✓</span><span>O AgendaMoz só terá acesso de <strong>leitura</strong> — nunca poderá fazer transferências ou movimentar o seu dinheiro.</span></p>
+              <p className="flex items-start gap-2"><span className="text-green-600 font-bold flex-shrink-0 mt-0.5">✓</span><span>Os seus dados são <strong>protegidos e nunca partilhados</strong> com terceiros.</span></p>
+              <p className="flex items-start gap-2"><span className="text-blue-500 font-bold flex-shrink-0 mt-0.5">ℹ</span><span>Esta funcionalidade é <strong>completamente opcional</strong> — pode continuar a usar o AgendaMoz sem a activar.</span></p>
             </div>
           </div>
         </div>

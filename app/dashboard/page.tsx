@@ -164,7 +164,7 @@ export default function DashboardPage() {
               <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider leading-tight">{label}</p>
               <Icon className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
             </div>
-            <p className="font-display text-xl font-bold text-gray-900 truncate">{value}</p>
+            <p className="font-mono text-xl font-bold text-gray-900 truncate tabular-nums">{value}</p>
           </div>
         ))}
 
