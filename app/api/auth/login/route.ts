@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
-import crypto from "crypto";
+
+// Força a route a ser sempre dinâmica (fix do erro de build)
+export const dynamic = "force-dynamic";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,6 +10,15 @@ const supabase = createClient(
 );
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
+
+// Usa Web Crypto API em vez do módulo Node "crypto"
+function generateToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
 export async function POST(req: Request) {
   try {
@@ -17,7 +28,7 @@ export async function POST(req: Request) {
       return Response.json({ error: "Email inválido" }, { status: 400 });
     }
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = generateToken();
     const expires_at = new Date(Date.now() + 15 * 60 * 1000).toISOString();
 
     const { error: dbError } = await supabase

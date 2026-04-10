@@ -1,6 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+// Força a route a ser sempre dinâmica (fix do erro de build)
+export const dynamic = "force-dynamic";
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
