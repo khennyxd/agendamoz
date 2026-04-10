@@ -1,5 +1,22 @@
 "use client"; // v2
 
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default function Dashboard() {
+  const session = cookies().get("session");
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <p>Estás logado</p>
+    </div>
+  );
+}
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { Calendar, TrendingUp, Users, CheckCircle, ChevronRight, Phone, X } from "lucide-react";

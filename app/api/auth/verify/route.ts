@@ -1,47 +1,27 @@
-import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
-
-export const dynamic = "force-dynamic";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-  // ✅ Inicialização DENTRO da função
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
   const { searchParams } = new URL(req.url);
   const token = searchParams.get("token");
 
   if (!token) {
-    return Response.redirect(new URL("/login?error=token_missing", req.url));
+    return NextResponse.redirect(new URL("/login?error=missing_token", req.url));
   }
 
-  const { data, error } = await supabase
-    .from("magic_links")
-    .select("*")
-    .eq("token", token)
-    .eq("used", false)
-    .gt("expires_at", new Date().toISOString())
-    .single();
+  // aqui tu depois validas no Supabase
+  const user = { id: "123", email: "test@gmail.com" };
 
-  if (error || !data) {
-    return Response.redirect(new URL("/login?error=token_invalid", req.url));
+  if (!user) {
+    return NextResponse.redirect(new URL("/login?error=invalid_token", req.url));
   }
 
-  await supabase
-    .from("magic_links")
-    .update({ used: true })
-    .eq("token", token);
+  const response = NextResponse.redirect(new URL("/dashboard", req.url));
 
-  const cookieStore = cookies();
-  cookieStore.set("agendamoz_session", data.email, {
+  response.cookies.set("session", user.id, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 24 * 7,
     path: "/",
-    sameSite: "lax",
   });
 
-  return Response.redirect(new URL("/dashboard", req.url));
+  return response;
 }
