@@ -1,17 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 
-// Força a route a ser sempre dinâmica (fix do erro de build)
 export const dynamic = "force-dynamic";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-const resend = new Resend(process.env.RESEND_API_KEY!);
-
-// Usa Web Crypto API em vez do módulo Node "crypto"
 function generateToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
@@ -21,6 +12,13 @@ function generateToken(): string {
 }
 
 export async function POST(req: Request) {
+  // ✅ Inicialização DENTRO da função — só corre em runtime, nunca em build time
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const resend = new Resend(process.env.RESEND_API_KEY!);
+
   try {
     const { email } = await req.json();
 
