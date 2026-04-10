@@ -10,10 +10,13 @@ export async function GET(req: Request) {
 
   const response = NextResponse.redirect(new URL("/dashboard", url));
 
-  response.cookies.set("session", "user123", {
-    httpOnly: true,
-    path: "/",
-  });
+  response.cookies.set({
+  name: "session",
+  value: "user123",
+  httpOnly: true,
+  path: "/",
+  sameSite: "lax"
+});
 
   return response;
 }
