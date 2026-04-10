@@ -74,37 +74,80 @@ export default function ReportsPage() {
         "Notas": a.notes || "",
         "Criado em": format(parseISO(a.created_at), "dd/MM/yyyy HH:mm"),
       }));
+
       const ws = XLSX.utils.json_to_sheet(rows);
       const wb = XLSX.utils.book_new();
-      ws["!cols"] = [{ wch: 12 }, { wch: 8 }, { wch: 20 }, { wch: 16 }, { wch: 20 }, { wch: 12 }, { wch: 14 }, { wch: 12 }, { wch: 25 }, { wch: 16 }];
+      ws["!cols"] = [
+        { wch: 12 }, { wch: 8 }, { wch: 20 }, { wch: 16 },
+        { wch: 20 }, { wch: 12 }, { wch: 14 }, { wch: 12 },
+        { wch: 25 }, { wch: 16 },
+      ];
       XLSX.utils.book_append_sheet(wb, ws, "Agendamentos");
-      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-      const blob = new Blob([wbout], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `relatorio-${business?.name}-${format(new Date(), "yyyy-MM")}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-    } catch (err) { console.error("Erro ao exportar:", err); }
+
+      // Use base64 method for mobile compatibility (avoids Blob/createObjectURL issues on iOS/Android)
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
+      const fileName = `relatorio-${business?.name || "agendamoz"}-${format(new Date(), "yyyy-MM")}.xlsx`;
+
+      // Detect mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // On mobile: use data URI which opens in compatible apps
+        const dataUri = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${wbout}`;
+        const link = document.createElement("a");
+        link.setAttribute("href", dataUri);
+        link.setAttribute("download", fileName);
+        link.setAttribute("target", "_blank");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Desktop: use Blob
+        const binary = atob(wbout);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const blob = new Blob([bytes], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+      }
+    } catch (err) {
+      console.error("Erro ao exportar:", err);
+      alert("Erro ao gerar relatório. Tente novamente.");
+    }
     setExporting(false);
   }
 
   function statusLabel(status: string) {
-    const map: Record<string, string> = { pending: "Pendente", confirmed: "Confirmado", completed: "Concluído", cancelled: "Cancelado" };
+    const map: Record<string, string> = {
+      pending: "Pendente", confirmed: "Confirmado",
+      completed: "Concluído", cancelled: "Cancelado",
+    };
     return map[status] || status;
   }
+
   function statusClass(status: string) {
-    const map: Record<string, string> = { pending: "badge-pending", confirmed: "badge-confirmed", completed: "badge-completed", cancelled: "badge-cancelled" };
-    return map[status] || "";
+    const map: Record<string, string> = {
+      pending: "badge-pending", confirmed: "badge-confirmed",
+      completed: "badge-completed", cancelled: "badge-cancelled",
+    };
+    return map[status] || "badge-pending";
   }
 
-  const totalRevenue = filtered.filter(a => a.status === "completed").reduce((sum, a) => sum + ((a as any).service?.price_mzn || 0), 0);
-  const completed = filtered.filter(a => a.status === "completed").length;
-  const cancelled = filtered.filter(a => a.status === "cancelled").length;
-  const pending = filtered.filter(a => a.status === "pending").length;
+  const totalRevenue = filtered
+    .filter(a => a.status === "completed")
+    .reduce((s, a) => s + ((a as any).service?.price_mzn || 0), 0);
+
+  const completedCount = filtered.filter(a => a.status === "completed").length;
+  const cancelledCount = filtered.filter(a => a.status === "cancelled").length;
+  const uniqueClients  = new Set(filtered.map(a => a.client_phone)).size;
 
   if (bizLoading || loading) return (
     <div className="flex items-center justify-center h-64">
@@ -113,25 +156,24 @@ export default function ReportsPage() {
   );
 
   if (!hasAccess) return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Relatórios</h1>
-      <p className="text-gray-500 mb-8 text-sm">Análise detalhada dos seus agendamentos</p>
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm text-center py-16 px-6">
-        <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-          <Lock className="w-8 h-8 text-purple-400" />
-        </div>
-        <h2 className="font-display text-xl font-bold text-gray-900 mb-2">Relatórios indisponíveis</h2>
-        <p className="text-gray-500 text-sm mb-2">Disponível a partir do plano <strong>Profissional</strong>.</p>
-        <p className="text-gray-400 text-xs mb-8">Relatórios detalhados, estatísticas e exportação Excel.</p>
-        <Link href="/dashboard/billing" className="btn-primary inline-flex items-center gap-2">Actualizar para Profissional →</Link>
+    <div className="max-w-lg mx-auto text-center py-16 px-4">
+      <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <Lock className="w-10 h-10 text-purple-400" />
       </div>
+      <h2 className="font-display text-2xl font-bold text-gray-900 mb-3">Relatórios</h2>
+      <p className="text-gray-500 mb-6">
+        Os relatórios e exportação Excel estão disponíveis a partir do plano <strong className="text-gray-800">Profissional</strong>.
+      </p>
+      <Link href="/dashboard/billing" className="btn-primary inline-flex">
+        Ver planos →
+      </Link>
     </div>
   );
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl sm:text-3xl font-bold text-gray-900">Relatórios</h1>
           <p className="text-gray-500 text-sm mt-0.5">{filtered.length} agendamentos no período</p>
@@ -139,41 +181,33 @@ export default function ReportsPage() {
         <button
           onClick={exportExcel}
           disabled={exporting || filtered.length === 0}
-          className="btn-primary flex items-center gap-2 text-sm py-2.5 disabled:opacity-50"
+          className="btn-primary flex items-center gap-2 justify-center disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
         >
-          <Download className="w-4 h-4" />
-          <span className="hidden sm:inline">{exporting ? "A exportar..." : "Exportar Excel"}</span>
-          <span className="sm:hidden">Excel</span>
+          {exporting ? (
+            <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />A preparar...</>
+          ) : (
+            <><Download className="w-4 h-4" />Exportar Excel</>
+          )}
         </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        {[
-          { label: "Receita gerada", value: `${totalRevenue.toLocaleString("pt-MZ")} MZN`, icon: TrendingUp, color: "purple" },
-          { label: "Concluídos",     value: completed, icon: CheckCircle, color: "green" },
-          { label: "Pendentes",      value: pending,   icon: Calendar,    color: "amber" },
-          { label: "Cancelados",     value: cancelled, icon: X,           color: "red" },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4">
-            <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-2 ${color === "purple" ? "bg-purple-100" : color === "green" ? "bg-green-100" : color === "amber" ? "bg-amber-100" : "bg-red-100"}`}>
-              <Icon className={`w-4 h-4 ${color === "purple" ? "text-purple-600" : color === "green" ? "text-green-600" : color === "amber" ? "text-amber-600" : "text-red-500"}`} />
-            </div>
-            <p className="font-nums text-xl font-bold text-gray-900 truncate">{value}</p>
-            <p className="text-gray-500 text-xs mt-0.5">{label}</p>
-          </div>
-        ))}
-      </div>
-
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-5">
-        <select className="input sm:w-auto" value={period} onChange={(e) => setPeriod(e.target.value as FilterPeriod)}>
+      <div className="flex flex-col sm:flex-row gap-3 mb-8">
+        <select
+          value={period}
+          onChange={e => setPeriod(e.target.value as FilterPeriod)}
+          className="input sm:max-w-[200px] text-sm"
+        >
           <option value="this_month">Este mês</option>
           <option value="last_month">Mês passado</option>
           <option value="last_3_months">Últimos 3 meses</option>
-          <option value="all">Todos os períodos</option>
+          <option value="all">Todo o período</option>
         </select>
-        <select className="input sm:w-auto" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          className="input sm:max-w-[200px] text-sm"
+        >
           <option value="all">Todos os estados</option>
           <option value="pending">Pendente</option>
           <option value="confirmed">Confirmado</option>
@@ -182,89 +216,119 @@ export default function ReportsPage() {
         </select>
       </div>
 
-      {/* Desktop table */}
-      <div className="hidden sm:block bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        {filtered.length === 0 ? (
-          <div className="text-center py-16">
-            <Calendar className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-            <p className="text-gray-500 font-medium">Nenhum agendamento no período</p>
-            <p className="text-gray-400 text-sm mt-1">Tente alterar os filtros</p>
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        {[
+          { label: "Total", value: filtered.length, icon: <Calendar className="w-5 h-5 text-purple-500" />, bg: "bg-purple-50" },
+          { label: "Concluídos", value: completedCount, icon: <CheckCircle className="w-5 h-5 text-green-500" />, bg: "bg-green-50" },
+          { label: "Cancelados", value: cancelledCount, icon: <X className="w-5 h-5 text-red-500" />, bg: "bg-red-50" },
+          { label: "Clientes", value: uniqueClients, icon: <Users className="w-5 h-5 text-blue-500" />, bg: "bg-blue-50" },
+        ].map((s) => (
+          <div key={s.label} className="bg-white border border-gray-200 rounded-2xl p-4">
+            <div className={`w-9 h-9 ${s.bg} rounded-xl flex items-center justify-center mb-3`}>
+              {s.icon}
+            </div>
+            <p className="font-nums text-2xl font-bold text-gray-900">{s.value}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
           </div>
-        ) : (
-          <div className="overflow-x-auto">
+        ))}
+      </div>
+
+      {/* Revenue highlight */}
+      <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl p-5 sm:p-6 mb-8 text-white">
+        <div className="flex items-center gap-3">
+          <TrendingUp className="w-6 h-6 text-purple-200 flex-shrink-0" />
+          <div>
+            <p className="text-purple-200 text-sm font-medium">Receita do período (concluídos)</p>
+            <p className="font-nums text-3xl font-bold mt-0.5">{totalRevenue.toLocaleString("pt-MZ")} <span className="text-xl font-normal text-purple-200">MZN</span></p>
+          </div>
+        </div>
+      </div>
+
+      {/* Table — desktop */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-16">
+          <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <p className="text-gray-500">Nenhum agendamento encontrado para este período.</p>
+        </div>
+      ) : (
+        <>
+          <div className="hidden sm:block bg-white border border-gray-200 rounded-2xl overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="bg-white border-b border-gray-100">
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-4">Data & Hora</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Cliente</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Serviço</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Preço</th>
-                  <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-4">Estado</th>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  {["Cliente", "Serviço", "Data & Hora", "Estado", "Valor"].map(h => (
+                    <th key={h} className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-5 py-3 first:pl-6">{h}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {filtered.map((appt) => (
-                  <tr key={appt.id} className="hover:bg-gray-50 transition-colors">
+                {filtered.map(a => (
+                  <tr key={a.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4">
+                      <p className="font-medium text-gray-900 text-sm">{a.client_name}</p>
+                      <p className="text-gray-400 text-xs mt-0.5">{a.client_phone}</p>
+                    </td>
+                    <td className="px-5 py-4 text-gray-700 text-sm">{(a as any).service?.name || "—"}</td>
                     <td className="px-5 py-4">
-                      <p className="text-gray-900 text-sm font-medium">{format(parseISO(appt.date), "d MMM yyyy", { locale: pt })}</p>
-                      <p className="text-gray-400 text-xs">{appt.time.slice(0, 5)}</p>
+                      <p className="text-gray-900 text-sm font-medium">{format(parseISO(a.date), "d MMM yyyy", { locale: pt })}</p>
+                      <p className="text-gray-400 text-xs">{a.time.slice(0, 5)}</p>
                     </td>
-                    <td className="px-4 py-4">
-                      <p className="text-gray-900 text-sm font-medium">{appt.client_name}</p>
-                      <p className="text-gray-400 text-xs">{appt.client_phone}</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-gray-700 text-sm">{(appt as any).service?.name || "—"}</p>
-                      <p className="text-gray-400 text-xs">{(appt as any).service?.duration_minutes} min</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="text-gray-900 text-sm font-semibold">{(appt as any).service?.price_mzn?.toLocaleString("pt-MZ") || "0"} MZN</p>
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className={statusClass(appt.status)}>{statusLabel(appt.status)}</span>
+                    <td className="px-5 py-4"><span className={statusClass(a.status)}>{statusLabel(a.status)}</span></td>
+                    <td className="px-5 py-4 text-gray-800 text-sm font-semibold">
+                      {((a as any).service?.price_mzn || 0).toLocaleString()} MZN
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        )}
-      </div>
 
-      {/* Mobile card list */}
-      <div className="sm:hidden flex flex-col gap-3">
-        {filtered.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 text-center py-12">
-            <Calendar className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-            <p className="text-gray-500 text-sm">Nenhum agendamento no período</p>
+          {/* Mobile: accordion cards */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {filtered.map(a => (
+              <div key={a.id} className="bg-white border border-gray-200 rounded-2xl overflow-hidden">
+                <button
+                  className="w-full flex items-center justify-between px-4 py-3.5 text-left"
+                  onClick={() => setExpandedId(expandedId === a.id ? null : a.id)}
+                >
+                  <div>
+                    <p className="font-semibold text-gray-900 text-sm">{a.client_name}</p>
+                    <p className="text-gray-400 text-xs mt-0.5">
+                      {format(parseISO(a.date), "d MMM", { locale: pt })} · {a.time.slice(0,5)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={statusClass(a.status)}>{statusLabel(a.status)}</span>
+                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedId === a.id ? "rotate-180" : ""}`} />
+                  </div>
+                </button>
+                {expandedId === a.id && (
+                  <div className="border-t border-gray-100 px-4 py-3 grid grid-cols-2 gap-3 bg-gray-50">
+                    {[
+                      { label: "Telefone", value: a.client_phone },
+                      { label: "Serviço", value: (a as any).service?.name || "—" },
+                      { label: "Preço", value: `${(a as any).service?.price_mzn || 0} MZN` },
+                      { label: "Data", value: format(parseISO(a.date), "d MMM yyyy", { locale: pt }) },
+                    ].map(f => (
+                      <div key={f.label}>
+                        <p className="text-xs text-gray-400 mb-0.5">{f.label}</p>
+                        <p className="text-gray-800 font-medium text-sm">{f.value}</p>
+                      </div>
+                    ))}
+                    {a.notes && (
+                      <div className="col-span-2">
+                        <p className="text-xs text-gray-400 mb-0.5">Notas</p>
+                        <p className="text-gray-700 text-sm">{a.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        ) : filtered.map((appt) => (
-          <div key={appt.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-            <button
-              className="w-full flex items-center justify-between px-4 py-3 text-left"
-              onClick={() => setExpandedId(expandedId === appt.id ? null : appt.id)}
-            >
-              <div className="min-w-0">
-                <p className="font-semibold text-gray-900 text-sm truncate">{appt.client_name}</p>
-                <p className="text-gray-400 text-xs">{format(parseISO(appt.date), "d MMM", { locale: pt })} · {appt.time.slice(0,5)}</p>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                <span className={statusClass(appt.status)}>{statusLabel(appt.status)}</span>
-                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${expandedId === appt.id ? "rotate-180" : ""}`} />
-              </div>
-            </button>
-            {expandedId === appt.id && (
-              <div className="px-4 pb-4 border-t border-gray-100 pt-3 grid grid-cols-2 gap-3 text-sm">
-                <div><p className="text-xs text-gray-400 mb-0.5">Serviço</p><p className="text-gray-800 font-medium">{(appt as any).service?.name || "—"}</p></div>
-                <div><p className="text-xs text-gray-400 mb-0.5">Preço</p><p className="text-gray-800 font-medium">{(appt as any).service?.price_mzn || 0} MZN</p></div>
-                <div><p className="text-xs text-gray-400 mb-0.5">Telefone</p><p className="text-gray-800 font-medium">{appt.client_phone}</p></div>
-                <div><p className="text-xs text-gray-400 mb-0.5">Duração</p><p className="text-gray-800 font-medium">{(appt as any).service?.duration_minutes || "—"} min</p></div>
-                {appt.notes && <div className="col-span-2"><p className="text-xs text-gray-400 mb-0.5">Notas</p><p className="text-gray-600">{appt.notes}</p></div>}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
