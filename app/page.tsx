@@ -331,7 +331,7 @@ export default function LandingPage() {
       <section className="py-24 px-4 sm:px-6 bg-purple-600">
         <Reveal>
           <div className="max-w-2xl mx-auto text-center">
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">Pronto para transformar o seu negócio?</h2>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-white mb-6">Pronto para transformar seu negócio?</h2>
             <p className="text-purple-200 text-lg mb-10">Junte-se a mais de 800 profissionais que já transformaram a sua agenda num sistema previsível de crescimento.</p>
             <Link href="/register" className="bg-white text-purple-700 px-10 py-4 rounded-xl font-bold text-base inline-flex items-center gap-2 hover:bg-purple-50 transition-colors group">
               7 dias grátis
