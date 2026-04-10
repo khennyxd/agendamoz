@@ -1,13 +1,15 @@
 "use client";
+
 import { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function VerifyPage() {
   const router = useRouter();
-  const params = useSearchParams();
 
   useEffect(() => {
-    const token = params.get("token");
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token");
+
     if (token) {
       window.location.href = `/api/auth/verify?token=${token}`;
     } else {
@@ -17,8 +19,12 @@ export default function VerifyPage() {
 
   return (
     <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", minHeight: "100vh", fontFamily: "Arial",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      fontFamily: "Arial",
       background: "#F5F3FF",
     }}>
       <div style={{ fontSize: 48 }}>⏳</div>
