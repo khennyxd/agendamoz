@@ -1,35 +1,28 @@
-"use client";
+import { NextResponse } from "next/server";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const token = url.searchParams.get("token");
 
-export default function VerifyPage() {
-  const router = useRouter();
+  if (!token) {
+    return NextResponse.redirect(new URL("/login?error=missing_token", url));
+  }
 
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const token = url.searchParams.get("token");
+  // simulação de user válido
+  const user = { id: "123" };
 
-    if (token) {
-      window.location.href = `/api/auth/verify?token=${token}`;
-    } else {
-      router.push("/login?error=token_missing");
-    }
-  }, []);
+  if (!user) {
+    return NextResponse.redirect(new URL("/login?error=invalid_token", url));
+  }
 
-  return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      minHeight: "100vh",
-      fontFamily: "Arial",
-      background: "#F5F3FF",
-    }}>
-      <div style={{ fontSize: 48 }}>⏳</div>
-      <h2 style={{ color: "#6D28D9" }}>A verificar o teu acesso...</h2>
-      <p style={{ color: "#888" }}>Aguarda um momento.</p>
-    </div>
-  );
+  const response = NextResponse.redirect(new URL("/dashboard", url));
+
+  response.cookies.set({
+    name: "session",
+    value: user.id,
+    httpOnly: true,
+    path: "/",
+  });
+
+  return response;
 }
