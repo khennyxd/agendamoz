@@ -349,7 +349,7 @@ export default function LandingPage() {
               <img src="/amlogo.svg" alt="AgendaMoz" className="h-24 w-auto" />
               <span className="font-display text-white text-lg font-bold">AgendaMoz</span>
             </div>
-            <p className="text-sm max-w-xs">A forma mais simples de organizar, profissionalizar e escalar o seu negócio em Moçambique.</p>
+            <p className="text-sm max-w-xs">A forma mais simples de organizar, profissionalizar e escalar o seu negócio.</p>
           </div>
           <div className="flex gap-12 text-sm">
             <div className="flex flex-col gap-2">
