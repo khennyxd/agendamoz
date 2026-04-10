@@ -8,15 +8,16 @@ export async function GET(req: Request) {
     return NextResponse.redirect(new URL("/login", url));
   }
 
+  // simula user válido (depois ligas ao Supabase)
+  const userId = "123";
+
   const response = NextResponse.redirect(new URL("/dashboard", url));
 
-  response.cookies.set({
-  name: "session",
-  value: "user123",
-  httpOnly: true,
-  path: "/",
-  sameSite: "lax"
-});
+  response.cookies.set("session", userId, {
+    httpOnly: false, // IMPORTANTE para testar
+    path: "/",
+    sameSite: "lax",
+  });
 
   return response;
 }
