@@ -1,28 +1,21 @@
-import { NextResponse } from "next/server";
+"use client";
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const token = url.searchParams.get("token");
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-  if (!token) {
-    return NextResponse.redirect(new URL("/login?error=missing_token", url));
-  }
+export default function VerifyPage() {
+  const router = useRouter();
 
-  // simulação de user válido
-  const user = { id: "123" };
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const token = url.searchParams.get("token");
 
-  if (!user) {
-    return NextResponse.redirect(new URL("/login?error=invalid_token", url));
-  }
+    if (token) {
+      window.location.href = `/api/auth/verify?token=${token}`;
+    } else {
+      router.push("/login?error=token_missing");
+    }
+  }, []);
 
-  const response = NextResponse.redirect(new URL("/dashboard", url));
-
-  response.cookies.set({
-    name: "session",
-    value: user.id,
-    httpOnly: true,
-    path: "/",
-  });
-
-  return response;
+  return <p>Verificando...</p>;
 }
