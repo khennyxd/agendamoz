@@ -1,23 +1,9 @@
-import { NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
 
+// Esta route já não é necessária para magic links Supabase —
+// o Supabase redireciona diretamente para a URL configurada em emailRedirectTo.
+// Mantida para não quebrar links antigos.
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const token = url.searchParams.get("token");
-
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", url));
-  }
-
-  // simula user válido (depois ligas ao Supabase)
-  const userId = "123";
-
-  const response = NextResponse.redirect(new URL("/dashboard", url));
-
-  response.cookies.set("session", userId, {
-    httpOnly: false, // IMPORTANTE para testar
-    path: "/",
-    sameSite: "lax",
-  });
-
-  return response;
+  return Response.redirect(new URL("/login", url));
 }
