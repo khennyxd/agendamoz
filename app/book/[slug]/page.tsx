@@ -23,6 +23,27 @@ type PageMeta = {
   customSlogan?: string;
 };
 
+// ── Função de contraste automático ──────────────────────────────────────
+// Calcula a luminância relativa de uma cor hex e devolve branco ou escuro
+// para garantir legibilidade 100% independente da cor de fundo escolhida.
+function getContrastColor(hex: string): string {
+  const h = hex.replace("#", "");
+  if (h.length < 6) return "#ffffff";
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  // Fórmula W3C de luminância perceptual
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  // > 0.55 = fundo claro → texto escuro; < 0.55 = fundo escuro → texto branco
+  return luminance > 0.55 ? "#1e1b4b" : "#ffffff";
+}
+
+// Versão semi-transparente do texto de contraste (para subtítulos)
+function getContrastMuted(hex: string): string {
+  const base = getContrastColor(hex);
+  return base === "#ffffff" ? "rgba(255,255,255,0.75)" : "rgba(30,27,75,0.65)";
+}
+
 export default function BookingPage() {
   const { slug } = useParams<{ slug: string }>();
   const [business, setBusiness] = useState<Business | null>(null);
@@ -43,33 +64,18 @@ export default function BookingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [limitReached, setLimitReached] = useState(false);
 
-  // Computed accent color with fallback
-  const accent = pageMeta.accentColor || "#7c3aed";
+  // Cor de destaque + contraste calculado automaticamente
+  const accent      = pageMeta.accentColor || "#7c3aed";
+  const textOnAccent = getContrastColor(accent);       // texto principal sobre fundo accent
+  const mutedOnAccent = getContrastMuted(accent);      // texto secundário sobre fundo accent
 
   useEffect(() => {
     async function load() {
-      const { data: biz } = await supabase
-        .from("businesses")
-        .select("*")
-        .eq("slug", slug)
-        .single();
-
+      const { data: biz } = await supabase.from("businesses").select("*").eq("slug", slug).single();
       if (!biz) { setNotFound(true); setLoading(false); return; }
       setBusiness(biz);
-
-      // Parse empresarial page meta
-      try {
-        if ((biz as any).page_meta) {
-          setPageMeta(JSON.parse((biz as any).page_meta));
-        }
-      } catch {}
-
-      const { data: svcs } = await supabase
-        .from("services")
-        .select("*")
-        .eq("business_id", biz.id)
-        .eq("is_active", true)
-        .order("price_mzn");
+      try { if ((biz as any).page_meta) setPageMeta(JSON.parse((biz as any).page_meta)); } catch {}
+      const { data: svcs } = await supabase.from("services").select("*").eq("business_id", biz.id).eq("is_active", true).order("price_mzn");
       setServices(svcs || []);
       setLoading(false);
     }
@@ -78,13 +84,7 @@ export default function BookingPage() {
 
   async function loadBookedSlots(date: string) {
     if (!business) return;
-    const { data } = await supabase
-      .from("appointments")
-      .select("time, service:services(duration_minutes)")
-      .eq("business_id", business.id)
-      .eq("date", date)
-      .neq("status", "cancelled");
-
+    const { data } = await supabase.from("appointments").select("time, service:services(duration_minutes)").eq("business_id", business.id).eq("date", date).neq("status", "cancelled");
     const blocked = new Set<string>();
     for (const appt of (data || [])) {
       const duration = (appt as any).service?.duration_minutes || 30;
@@ -92,9 +92,7 @@ export default function BookingPage() {
       const startMins = h * 60 + m;
       for (let i = 0; i < duration; i += 30) {
         const slotMins = startMins + i;
-        const slotH = Math.floor(slotMins / 60).toString().padStart(2, "0");
-        const slotM = (slotMins % 60).toString().padStart(2, "0");
-        blocked.add(`${slotH}:${slotM}`);
+        blocked.add(`${Math.floor(slotMins/60).toString().padStart(2,"0")}:${(slotMins%60).toString().padStart(2,"0")}`);
       }
     }
     setBookedSlots(Array.from(blocked));
@@ -107,12 +105,9 @@ export default function BookingPage() {
       const startMins = h * 60 + m;
       for (let i = 0; i < serviceDuration; i += 30) {
         const checkMins = startMins + i;
-        const checkH = Math.floor(checkMins / 60).toString().padStart(2, "0");
-        const checkM = (checkMins % 60).toString().padStart(2, "0");
-        if (bookedList.includes(`${checkH}:${checkM}`)) {
-          unavailable.add(slot);
-          break;
-        }
+        const ch = Math.floor(checkMins/60).toString().padStart(2,"0");
+        const cm = (checkMins%60).toString().padStart(2,"0");
+        if (bookedList.includes(`${ch}:${cm}`)) { unavailable.add(slot); break; }
       }
     }
     return unavailable;
@@ -121,32 +116,12 @@ export default function BookingPage() {
   async function submitBooking() {
     if (!business || !selectedService) return;
     setSubmitting(true);
-
     if (business.plan === "basico" || !business.plan || business.plan === "none") {
       const thisMonth = new Date().toISOString().slice(0, 7);
-      const { count } = await supabase
-        .from("appointments")
-        .select("id", { count: "exact", head: true })
-        .eq("business_id", business.id)
-        .gte("date", thisMonth + "-01")
-        .neq("status", "cancelled");
-      if ((count || 0) >= 50) {
-        setLimitReached(true);
-        setSubmitting(false);
-        return;
-      }
+      const { count } = await supabase.from("appointments").select("id", { count: "exact", head: true }).eq("business_id", business.id).gte("date", thisMonth + "-01").neq("status", "cancelled");
+      if ((count || 0) >= 50) { setLimitReached(true); setSubmitting(false); return; }
     }
-
-    const { error } = await supabase.from("appointments").insert({
-      business_id: business.id,
-      service_id: selectedService.id,
-      client_name: clientName,
-      client_phone: clientPhone,
-      date: selectedDate,
-      time: selectedTime,
-      notes,
-      status: "pending",
-    });
+    const { error } = await supabase.from("appointments").insert({ business_id: business.id, service_id: selectedService.id, client_name: clientName, client_phone: clientPhone, date: selectedDate, time: selectedTime, notes, status: "pending" });
     if (!error) {
       setStep("done");
       const plan = business.plan || "none";
@@ -183,9 +158,7 @@ export default function BookingPage() {
           <Calendar className="w-10 h-10 text-amber-500" />
         </div>
         <h1 className="font-display text-2xl font-bold text-gray-900 mb-3">Agenda lotada este mês</h1>
-        <p className="text-gray-500 text-sm leading-relaxed">
-          <strong>{business?.name}</strong> atingiu o limite de agendamentos deste mês. Por favor tente no próximo mês ou contacte directamente o negócio.
-        </p>
+        <p className="text-gray-500 text-sm leading-relaxed"><strong>{business?.name}</strong> atingiu o limite de agendamentos deste mês. Por favor tente no próximo mês ou contacte directamente o negócio.</p>
       </div>
     </div>
   );
@@ -209,16 +182,19 @@ export default function BookingPage() {
           <CheckCircle className="w-10 h-10" style={{ color: accent }} />
         </div>
         <h1 className="font-display text-3xl font-bold mb-3">Reserva recebida!</h1>
-        <p className="text-gray-600 mb-2">
-          O seu agendamento em <strong>{business?.name}</strong> foi recebido com sucesso.
-        </p>
+        <p className="text-gray-600 mb-2">O seu agendamento em <strong>{business?.name}</strong> foi recebido com sucesso.</p>
         <div className="bg-white rounded-2xl border border-gray-100 p-5 mt-6 text-left space-y-2">
           <p className="text-sm"><span className="text-gray-500">Serviço:</span> <strong>{selectedService?.name}</strong></p>
-          <p className="text-sm"><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "EEEE, d MMMM yyyy", { locale: pt })}</strong></p>
-          <p className="text-sm"><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
+          <p className="text-sm font-nums"><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "EEEE, d MMMM yyyy", { locale: pt })}</strong></p>
+          <p className="text-sm font-nums"><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
           <p className="text-sm"><span className="text-gray-500">Nome:</span> <strong>{clientName}</strong></p>
         </div>
         <p className="text-gray-500 text-sm mt-4">Aguarde confirmação por SMS.</p>
+        {/* AgendaMoz branding */}
+        <div className="mt-8 flex items-center justify-center gap-1.5">
+          <img src="/amlogo.svg" alt="" className="h-4 w-auto opacity-40" />
+          <span className="text-xs text-gray-400">Powered by <a href="/" className="hover:underline font-medium" style={{ color: accent }}>AgendaMoz</a></span>
+        </div>
       </div>
     </div>
   );
@@ -226,32 +202,63 @@ export default function BookingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
 
-      {/* Empresarial banner */}
+      {/* Banner empresarial */}
       {pageMeta.showBanner && pageMeta.bannerText && (
-        <div className="text-white text-sm text-center px-4 py-2 font-medium" style={{ backgroundColor: accent }}>
+        <div
+          className="text-sm text-center px-4 py-2 font-medium"
+          style={{ backgroundColor: accent, color: textOnAccent }}
+        >
           {pageMeta.bannerText}
         </div>
       )}
 
-      {/* Business header */}
-      <div className="text-white px-4 py-8" style={{ backgroundColor: accent }}>
-        <div className="max-w-lg mx-auto">
-          <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: `${accent}cc`, border: "1px solid rgba(255,255,255,0.2)" }}>
-            <Calendar className="w-6 h-6 text-white/90" />
+      {/* ── Header do negócio — texto com contraste automático ── */}
+      <div className="px-4 py-8" style={{ backgroundColor: accent }}>
+        <div className="max-w-lg mx-auto flex flex-col items-center text-center">
+
+          {/* Logo AgendaMoz — posição estratégica no topo */}
+          <div className="flex items-center gap-1.5 mb-5 opacity-90">
+            <img
+              src="/amlogo.svg"
+              alt="AgendaMoz"
+              className="h-5 w-auto"
+              style={{ filter: textOnAccent === "#ffffff" ? "brightness(0) invert(1)" : "brightness(0)" }}
+            />
+            <span className="text-xs font-semibold tracking-wide" style={{ color: mutedOnAccent }}>
+              AgendaMoz
+            </span>
           </div>
-          <h1 className="font-display text-2xl font-bold">{business?.name}</h1>
+
+          {/* Ícone do negócio */}
+          <div
+            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
+            style={{ backgroundColor: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}
+          >
+            <Calendar className="w-7 h-7" style={{ color: textOnAccent }} />
+          </div>
+
+          {/* Nome + slogan + info — tudo centrado */}
+          <h1 className="font-display text-2xl font-bold" style={{ color: textOnAccent }}>
+            {business?.name}
+          </h1>
           {pageMeta.customSlogan && (
-            <p className="text-white/90 text-sm font-medium mt-0.5 italic">{pageMeta.customSlogan}</p>
+            <p className="text-sm font-medium mt-1 italic" style={{ color: mutedOnAccent }}>
+              {pageMeta.customSlogan}
+            </p>
           )}
-          {business?.description && <p className="text-white/80 text-sm mt-1">{business.description}</p>}
-          <div className="flex flex-wrap gap-4 mt-3">
+          {business?.description && (
+            <p className="text-sm mt-1.5" style={{ color: mutedOnAccent }}>
+              {business.description}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-3">
             {business?.phone && (
-              <span className="flex items-center gap-1.5 text-white/90 text-sm">
+              <span className="flex items-center gap-1.5 text-sm font-nums" style={{ color: mutedOnAccent }}>
                 <Phone className="w-3.5 h-3.5" />{business.phone}
               </span>
             )}
             {business?.address && (
-              <span className="flex items-center gap-1.5 text-white/90 text-sm">
+              <span className="flex items-center gap-1.5 text-sm" style={{ color: mutedOnAccent }}>
                 <MapPin className="w-3.5 h-3.5" />{business.address}
               </span>
             )}
@@ -272,13 +279,17 @@ export default function BookingPage() {
             return (
               <div key={s} className="flex items-center gap-2 flex-1">
                 <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${done || active ? "text-white" : "bg-gray-200 text-gray-400"}`}
-                  style={done || active ? { backgroundColor: done ? accent : "#f59e0b" } : {}}
+                  className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors"
+                  style={
+                    done || active
+                      ? { backgroundColor: done ? accent : "#f59e0b", color: getContrastColor(done ? accent : "#f59e0b") }
+                      : { backgroundColor: "#e5e7eb", color: "#9ca3af" }
+                  }
                 >
                   {done ? "✓" : i + 1}
                 </div>
                 <span className={`text-xs hidden sm:block ${active ? "font-semibold text-gray-800" : "text-gray-400"}`}>{labels[i]}</span>
-                {i < 2 && <div className={`flex-1 h-0.5 ${done ? "" : "bg-gray-200"}`} style={done ? { backgroundColor: accent } : {}} />}
+                {i < 2 && <div className="flex-1 h-0.5" style={{ backgroundColor: done ? accent : "#e5e7eb" }} />}
               </div>
             );
           })}
@@ -287,7 +298,7 @@ export default function BookingPage() {
 
       <div className="max-w-lg mx-auto px-4 py-6 sm:py-8">
 
-        {/* STEP 1: Service */}
+        {/* STEP 1: Serviço */}
         {step === "service" && (
           <div>
             <h2 className="font-display text-xl sm:text-2xl font-bold mb-6">Escolha o serviço</h2>
@@ -308,12 +319,14 @@ export default function BookingPage() {
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-gray-900">{service.name}</p>
                         {service.description && <p className="text-gray-500 text-sm mt-0.5 truncate">{service.description}</p>}
-                        <span className="flex items-center gap-1 text-xs text-gray-500 mt-2">
+                        <span className="flex items-center gap-1 text-xs text-gray-500 mt-2 font-nums">
                           <Clock className="w-3.5 h-3.5" /> {service.duration_minutes} min
                         </span>
                       </div>
                       <div className="text-right ml-4 flex-shrink-0">
-                        <p className="font-display text-lg font-bold" style={{ color: accent }}>{service.price_mzn.toLocaleString("pt-MZ")}</p>
+                        <p className="font-display text-lg font-bold font-nums" style={{ color: accent }}>
+                          {service.price_mzn.toLocaleString("pt-MZ")}
+                        </p>
                         <p className="text-xs text-gray-400">MZN</p>
                       </div>
                     </div>
@@ -324,7 +337,7 @@ export default function BookingPage() {
           </div>
         )}
 
-        {/* STEP 2: Date & Time */}
+        {/* STEP 2: Data & Hora */}
         {step === "datetime" && (
           <div>
             <button onClick={() => setStep("service")} className="flex items-center gap-1 text-sm mb-6 hover:opacity-70 transition-opacity" style={{ color: accent }}>
@@ -340,7 +353,9 @@ export default function BookingPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              <p className="text-sm font-semibold capitalize">{format(weekStart, "MMMM yyyy", { locale: pt })}</p>
+              <p className="text-sm font-semibold capitalize font-nums">
+                {format(weekStart, "MMMM yyyy", { locale: pt })}
+              </p>
               <button onClick={() => setWeekStart(addDays(weekStart, 7))} className="p-2 hover:bg-gray-100 rounded-xl">
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -356,8 +371,14 @@ export default function BookingPage() {
                     key={dateStr}
                     disabled={isPast}
                     onClick={() => { setSelectedDate(dateStr); setSelectedTime(""); loadBookedSlots(dateStr); }}
-                    className="flex flex-col items-center py-2.5 sm:py-3 px-1 rounded-xl text-sm transition-all"
-                    style={isSelected ? { backgroundColor: accent, color: "white" } : isPast ? { opacity: 0.3, cursor: "not-allowed" } : {}}
+                    className="flex flex-col items-center py-2.5 sm:py-3 px-1 rounded-xl text-sm transition-all font-nums"
+                    style={
+                      isSelected
+                        ? { backgroundColor: accent, color: getContrastColor(accent) }
+                        : isPast
+                        ? { opacity: 0.3, cursor: "not-allowed" }
+                        : {}
+                    }
                   >
                     <span className="text-xs mb-1">{format(day, "EEE", { locale: pt })}</span>
                     <span className="font-bold">{format(day, "d")}</span>
@@ -379,10 +400,10 @@ export default function BookingPage() {
                         key={time}
                         disabled={isUnavailable}
                         onClick={() => setSelectedTime(time)}
-                        className="py-2.5 rounded-xl text-sm font-medium transition-all"
+                        className="py-2.5 rounded-xl text-sm font-medium transition-all font-nums"
                         style={
                           isSelected
-                            ? { backgroundColor: accent, color: "white" }
+                            ? { backgroundColor: accent, color: getContrastColor(accent) }
                             : isUnavailable
                             ? { backgroundColor: "#f3f4f6", color: "#d1d5db", cursor: "not-allowed", textDecoration: "line-through" }
                             : {}
@@ -399,15 +420,15 @@ export default function BookingPage() {
             <button
               onClick={() => setStep("info")}
               disabled={!selectedDate || !selectedTime}
-              className="w-full py-3 px-6 rounded-xl font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ backgroundColor: accent }}
+              className="w-full py-3 px-6 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: accent, color: getContrastColor(accent) }}
             >
               Continuar
             </button>
           </div>
         )}
 
-        {/* STEP 3: Client info */}
+        {/* STEP 3: Dados do cliente */}
         {step === "info" && (
           <div>
             <button onClick={() => setStep("datetime")} className="flex items-center gap-1 text-sm mb-6 hover:opacity-70 transition-opacity" style={{ color: accent }}>
@@ -421,26 +442,27 @@ export default function BookingPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-700">Número de telefone</label>
-                <input className="input" type="tel" placeholder="+258 84 000 0000" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
+                <input className="input font-nums" type="tel" placeholder="+258 84 000 0000" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} />
               </div>
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-700">Observações (opcional)</label>
                 <textarea className="input resize-none" rows={3} placeholder="Alguma informação adicional..." value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
 
+              {/* Resumo */}
               <div className="rounded-2xl p-4 text-sm space-y-2" style={{ backgroundColor: `${accent}10`, border: `1px solid ${accent}30` }}>
                 <p className="font-semibold mb-3" style={{ color: accent }}>Resumo da reserva</p>
                 <p><span className="text-gray-500">Serviço:</span> <strong>{selectedService?.name}</strong></p>
-                <p><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "d MMMM yyyy", { locale: pt })}</strong></p>
-                <p><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
-                <p><span className="text-gray-500">Preço:</span> <strong>{selectedService?.price_mzn.toLocaleString("pt-MZ")} MZN</strong></p>
+                <p className="font-nums"><span className="text-gray-500">Data:</span> <strong>{format(parseISO(selectedDate), "d MMMM yyyy", { locale: pt })}</strong></p>
+                <p className="font-nums"><span className="text-gray-500">Hora:</span> <strong>{selectedTime}</strong></p>
+                <p className="font-nums"><span className="text-gray-500">Preço:</span> <strong>{selectedService?.price_mzn.toLocaleString("pt-MZ")} MZN</strong></p>
               </div>
 
               <button
                 onClick={submitBooking}
                 disabled={!clientName || !clientPhone || submitting}
-                className="w-full py-3 px-6 rounded-xl font-semibold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ backgroundColor: accent }}
+                className="w-full py-3 px-6 rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ backgroundColor: accent, color: getContrastColor(accent) }}
               >
                 {submitting ? "A confirmar..." : "Confirmar reserva"}
               </button>
@@ -449,8 +471,16 @@ export default function BookingPage() {
         )}
       </div>
 
-      <div className="text-center pb-8 text-xs text-gray-400">
-        Powered by <a href="/" className="hover:underline" style={{ color: accent }}>AgendaMoz</a> 🇲🇿
+      {/* Footer com logo */}
+      <div className="text-center pb-8 flex items-center justify-center gap-1.5">
+        <img src="/amlogo.svg" alt="" className="h-3.5 w-auto opacity-30" />
+        <span className="text-xs text-gray-400">
+          Powered by{" "}
+          <a href="/" className="hover:underline font-medium" style={{ color: accent }}>
+            AgendaMoz
+          </a>{" "}
+          🇲🇿
+        </span>
       </div>
     </div>
   );
