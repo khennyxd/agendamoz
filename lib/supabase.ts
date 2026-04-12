@@ -1,9 +1,11 @@
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient } from "@supabase/ssr";
 
-// IMPORTANTE: createClientComponentClient guarda a sessão em cookies HTTP
-// (ao contrário de createClient que usa localStorage)
-// Isto permite que o middleware leia a sessão no servidor
-export const supabase = createClientComponentClient();
+// @supabase/ssr é o pacote oficial para Next.js App Router
+// Compatível com supabase-js v2.x — resolve o problema de cookies
+export const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Plan limits
 export const PLAN_LIMITS = {

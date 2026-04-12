@@ -1,48 +1,72 @@
-import { createMiddlewareClient } from "@supabase/auth-helpers-nextjs";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const res = NextResponse.next();
+  // IMPORTANTE: supabaseResponse deve ser devolvido no final para
+  // preservar os cookies de sessão actualizados
+  let supabaseResponse = NextResponse.next({ request });
 
-  // Lê e actualiza os cookies de sessão do Supabase
-  const supabase = createMiddlewareClient({ req: request, res });
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          // Primeiro actualiza os cookies no request
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          // Depois cria um novo response com os cookies actualizados
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
 
-  // IMPORTANTE: chamar getSession() actualiza o token se expirou
-  const { data: { session } } = await supabase.auth.getSession();
+  // getUser() é mais seguro que getSession() — valida o token no servidor Supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
 
-  // Páginas que não precisam de sessão
+  // Rotas que não precisam de autenticação
   const isPublic =
+    pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
     pathname.startsWith("/verify") ||
     pathname.startsWith("/api/") ||
     pathname.startsWith("/book/") ||
     pathname.startsWith("/privacidade") ||
-    pathname.startsWith("/termos") ||
-    pathname === "/";
+    pathname.startsWith("/termos");
 
-  // Sem sessão → redireciona para login
-  if (!session && !isPublic) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+  // Sem sessão e página protegida → redireciona para login
+  if (!user && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
   }
 
-  // Já tem sessão e vai para login/register → redireciona para dashboard
-  if (session && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {
-    const dashboardUrl = new URL("/dashboard", request.url);
-    return NextResponse.redirect(dashboardUrl);
+  // Já autenticado e vai para login/register → redireciona para dashboard
+  if (user && (pathname.startsWith("/login") || pathname.startsWith("/register"))) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
-  // Devolve sempre res (não NextResponse.next()) para preservar cookies actualizados
-  return res;
+  // SEMPRE devolve supabaseResponse (não NextResponse.next()) para preservar cookies
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    // Aplica a tudo excepto ficheiros estáticos
-    "/((?!_next/static|_next/image|favicon.ico|amlogo.svg|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.ico$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.svg$|.*\\.jpg$|.*\\.ico$).*)",
   ],
 };

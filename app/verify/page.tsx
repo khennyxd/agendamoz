@@ -8,9 +8,9 @@ export default function VerifyPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Ouve mudanças de estado — quando o Supabase confirma o email,
-    // emite SIGNED_IN e redireciona para o dashboard
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         router.push("/dashboard");
       }
@@ -25,13 +25,21 @@ export default function VerifyPage() {
   }, [router]);
 
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", minHeight: "100vh",
-      background: "#F5F3FF", fontFamily: "Arial, sans-serif",
-    }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        background: "#F5F3FF",
+        fontFamily: "Arial, sans-serif",
+      }}
+    >
       <div style={{ fontSize: 48 }}>⏳</div>
-      <h2 style={{ color: "#6D28D9", margin: "16px 0 8px" }}>A verificar sessão...</h2>
+      <h2 style={{ color: "#6D28D9", margin: "16px 0 8px" }}>
+        A verificar sessão...
+      </h2>
       <p style={{ color: "#888" }}>Aguarda um momento.</p>
     </div>
   );
