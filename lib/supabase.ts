@@ -1,9 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// IMPORTANTE: createClientComponentClient guarda a sessão em cookies HTTP
+// (ao contrário de createClient que usa localStorage)
+// Isto permite que o middleware leia a sessão no servidor
+export const supabase = createClientComponentClient();
 
 // Plan limits
 export const PLAN_LIMITS = {

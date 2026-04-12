@@ -15,21 +15,20 @@ export async function POST(req: Request) {
       return Response.json({ error: "Email inválido" }, { status: 400 });
     }
 
-    // type === "otp" → magic link via Supabase (sem senha)
     if (type === "otp") {
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+          emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/verify`,
         },
       });
       if (error) throw error;
-      return Response.json({ ok: true, mode: "otp" });
+      return Response.json({ ok: true });
     }
 
-    return Response.json({ error: "Tipo não suportado. Use a página de login." }, { status: 400 });
+    return Response.json({ error: "Tipo não suportado" }, { status: 400 });
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Erro ao processar pedido";
+    const msg = err instanceof Error ? err.message : "Erro ao processar";
     return Response.json({ error: msg }, { status: 500 });
   }
 }

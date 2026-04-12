@@ -4,33 +4,31 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-// Esta página recebe o callback do Supabase após magic link/OTP
 export default function VerifyPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Supabase coloca o token na hash (#access_token=...) — o cliente trata automaticamente
-    const { data: authListener } = supabase.auth.onAuthStateChange((event) => {
+    // Ouve mudanças de estado — quando o Supabase confirma o email,
+    // emite SIGNED_IN e redireciona para o dashboard
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === "SIGNED_IN") {
         router.push("/dashboard");
-      } else if (event === "SIGNED_OUT") {
-        router.push("/login");
       }
     });
 
-    // Fallback: se já tem sessão vai direto para dashboard
+    // Se já tem sessão activa, redireciona imediatamente
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) router.push("/dashboard");
     });
 
-    return () => authListener.subscription.unsubscribe();
+    return () => subscription.unsubscribe();
   }, [router]);
 
   return (
     <div style={{
       display: "flex", flexDirection: "column", alignItems: "center",
-      justifyContent: "center", minHeight: "100vh", fontFamily: "Arial",
-      background: "#F5F3FF",
+      justifyContent: "center", minHeight: "100vh",
+      background: "#F5F3FF", fontFamily: "Arial, sans-serif",
     }}>
       <div style={{ fontSize: 48 }}>⏳</div>
       <h2 style={{ color: "#6D28D9", margin: "16px 0 8px" }}>A verificar sessão...</h2>
