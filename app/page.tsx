@@ -14,13 +14,13 @@ const features = [
 const plans = [
   { name: "Básico",       price: "599",   desc: "Perfeito para começar",        cta: "Começar",       features: ["Até 50 agendamentos/mês","1 membro de equipa","Página de reserva pública","Suporte por email"], highlight: false },
   { name: "Profissional", price: "1.299", desc: "Para quem quer crescer com consistência", cta: "7 dias grátis", features: ["Agendamentos ilimitados","Até 5 membros de equipa","SMS automático para clientes","Relatórios + exportação Excel","Suporte prioritário Via Whatsapp"], highlight: true },
-  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      cta: "7 dias grátis", features: ["Tudo no Profissional","Membros de equipa ilimitados","Histórico ilimitado","API de integração","Personalização da página pública","Suporte com resposta em menos de 2 horas"], highlight: false },
+  { name: "Empresarial",  price: "2.499", desc: "Para operações estruturadas",      cta: "7 dias grátis", features: ["Agendamentos ilimitados","Membros de equipa ilimitados","SMS automático para clientes","Relatórios + exportação Excel","Chat GPT integrado","Personalização da página de agendamento","Suporte com resposta em menos de 2 horas"], highlight: false },
 ];
 
 const testimonials = [
-  { name: "Dra. Fátima Muiane",  role: "Clínica Saúde Plena, Maputo", text: "Antes atendia em média 13 consultas por semana. Hoje atendo 18, com menos falhas e uma agenda muito mais organizada.", rating: 4.7 },
-  { name: "Carlos Nhantumbo",    role: "Salão Bela Forma, Matola",    text: "Antes perdia horas ao telefone. Hoje os clientes marcam sozinhos e eu foco no atendimento.", rating: 4.9 },
-  { name: "Dra. Amélia Sitoe",   role: "Clínica Vida, Beira",         text: "Sistema simples, rápido de implementar e com suporte eficiente. Em poucos dias já estava a usar tudo.", rating: 5 },
+  { name: "Dra. Fátima Muiane",  role: "Clínica Saúde Plena, Maputo", text: "Antes atendia em média 13 consultas por semana. Hoje atendo 18, menos clientes faltando e uma agenda muito mais organizada.", rating: 4.7 },
+  { name: "Carlos Nhantumbo",    role: "Salão Bela Forma, Matola",    text: "Antes perdia horas ao celular. Hoje os clientes marcam sozinhos e eu foco no atendimento.", rating: 4.9 },
+  { name: "Dra. Amélia Sitoe",   role: "Clínica Vida, Beira",         text: "Sistema simples, rápido de implementar e com suporte eficiente. Em poucas horas já estava a usar tudo.", rating: 5 },
 ];
 
 function useScrollReveal() {
@@ -154,11 +154,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   {[
-                    { label: "Tempo de resposta",            value: "Em média, 3 horas" },
+                    { label: "Tempo de resposta",            value: "Em média 3 horas" },
                     { label: "Clientes que não aparecem",     value: "20 em cada 100" },
-                    { label: "Horas ao telefone/dia",         value: "3 a 4 horas" },
-                    { label: "Agendamentos perdidos",         value: "Cerca de 18 por mês" },
-                    { label: "Satisfação do cliente",         value: "3.5 / 5" },
+                    { label: "Horas ao telefone/dia",         value: "+3 horas" },
+                    { label: "Agendamentos perdidos",         value: "Cerca de 25 por mês" },
+                    { label: "Satisfação do cliente",         value: "3.5" },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
                       <p className="text-gray-600 text-sm">{label}</p>
@@ -186,11 +186,11 @@ export default function LandingPage() {
                 </div>
                 <div className="flex flex-col gap-4">
                   {[
-                    { label: "Tempo de resposta",           value: "Instantâneo (24/7)", badge: "-99%" },
+                    { label: "Tempo de resposta",           value: "Instantâneo", badge: "-99%" },
                     { label: "Clientes que não aparecem",    value: "Em média, 5 em 100",  badge: "-75%" },
                     { label: "Horas ao telefone/dia",        value: "30 minutos",          badge: "-85%" },
                     { label: "Agendamentos perdidos",        value: "0 a 2 por mês",       badge: "-90%" },
-                    { label: "Satisfação do cliente",        value: "4.8 / 5",             badge: "+40%" },
+                    { label: "Satisfação do cliente",        value: "4.8",             badge: "+40%" },
                   ].map(({ label, value, badge }) => (
                     <div key={label} className="flex items-center justify-between py-3 border-b border-white/20 last:border-0">
                       <p className="text-purple-100 text-sm">{label}</p>
